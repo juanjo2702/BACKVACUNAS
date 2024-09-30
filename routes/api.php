@@ -1,9 +1,18 @@
 <?php
 
+use App\Http\Controllers\AlcanceController;
+use App\Http\Controllers\BrigadaController;
+use App\Http\Controllers\CampaniaController;
+use App\Http\Controllers\HistoriavacunaController;
 use App\Http\Controllers\MascotaController;
+use App\Http\Controllers\MiembroController;
+use App\Http\Controllers\ParticipacionController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\PropietarioController;
 use App\Http\Controllers\RazaController;
+use App\Http\Controllers\RolController;
+use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\ZonaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,3 +35,16 @@ Route::apiResource('/personas',PersonaController::class);
 Route::apiResource('/propietarios', PropietarioController::class);
 Route::apiResource('/razas', RazaController::class);
 Route::apiResource('/mascotas', MascotaController::class);
+Route::apiResource('/rols', RolController::class);
+Route::apiResource('usuarios', UsuarioController::class);
+Route::apiResource('/zonas', ZonaController::class);
+Route::apiResource('/campanias', CampaniaController::class);
+Route::apiResource('/brigadas', BrigadaController::class);
+Route::apiResource('/miembros', MiembroController::class);
+Route::apiResource('/alcances', AlcanceController::class);
+Route::apiResource('/participacions', ParticipacionController::class);
+Route::apiResource('/historiavacunas', HistoriavacunaController::class);
+
+Route::get('/jefes-zona', [UsuarioController::class, 'getJefesZona']);
+Route::get('/personas/{usuario_id}', [PersonaController::class, 'getByUsuarioId']);
+Route::get('/personas/usuario/{usuario_id}', [PersonaController::class, 'getByUsuarioId']);

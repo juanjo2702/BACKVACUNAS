@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('propietarios', function (Blueprint $table) {
             $table->id();
-            $table->string('direccion');
+            $table->string('direccion')->nullable();
             $table->string('observaciones')->nullable();
             $table->string('foto')->nullable();
             $table->decimal('latitud', 15, 12); // 15 dígitos en total, 12 decimales

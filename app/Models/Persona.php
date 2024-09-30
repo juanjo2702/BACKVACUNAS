@@ -9,6 +9,11 @@ class Persona extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombres', 'apellidos', 'ci', 'telefono'];
+    protected $fillable = ['nombres', 'apellidos', 'ci', 'telefono', 'usuario_id'];
 
+    // Relación con el usuario
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'usuario_id');
+    }
 }

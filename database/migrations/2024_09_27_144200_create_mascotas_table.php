@@ -16,14 +16,13 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('genero');
             $table->string('especie');
-            $table->string('rangoEdad');
+            $table->date('rangoEdad');
             $table->string('color');
             $table->string('descripcion')->nullable();
             $table->string('tamanio');
             $table->string('fotoFrontal')->nullable();
             $table->string('fotoHorizontal')->nullable();
-            $table->string('estadoMascota');
-            $table->boolean('estado');
+            $table->integer('estado')->default(1);
             $table->unsignedBigInteger('raza_id');
             $table->unsignedBigInteger('propietario_id');
             $table->timestamps();

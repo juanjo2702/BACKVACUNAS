@@ -10,8 +10,27 @@ class PropietarioController extends Controller
     // Método para listar propietarios
     public function index()
     {
-        $propietarios = Propietario::with('persona')->get(); // Asumiendo que hay una relación con Persona
-        return response()->json($propietarios);
+        // Utilizamos la relación 'persona' para obtener los datos de la persona asociada
+        $propietarios = Propietario::with('persona')->get();
+
+        // Opcionalmente, puedes modificar la estructura de los datos si deseas solo campos específicos
+        $propietariosConPersonas = $propietarios->map(function($propietario) {
+            return [
+                'id' => $propietario->id,
+                'direccion' => $propietario->direccion,
+                'observaciones' => $propietario->observaciones,
+                'latitud' => $propietario->latitud,
+                'longitud' => $propietario->longitud,
+                'persona' => [
+                    'nombres' => $propietario->persona->nombres,
+                    'apellidos' => $propietario->persona->apellidos,
+                    'ci' => $propietario->persona->ci,
+                    'telefono' => $propietario->persona->telefono,
+                ]
+            ];
+        });
+
+        return response()->json($propietariosConPersonas);
     }
 
     // Método para guardar un nuevo propietario

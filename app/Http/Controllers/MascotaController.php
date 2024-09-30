@@ -44,7 +44,7 @@ class MascotaController extends Controller
             'fotoHorizontal' => 'nullable|string',
             'estadoMascota' => 'nullable|string|max:50',
             'estado' => 'nullable|boolean',
-            'raza_id' => 'nullable|exists:razas,id',
+            'raza_id' => 'required|exists:razas,id',
             'propietario_id' => 'required|exists:propietarios,id'
         ]);
 
