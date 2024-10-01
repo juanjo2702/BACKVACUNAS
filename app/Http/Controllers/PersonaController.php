@@ -79,4 +79,16 @@ class PersonaController extends Controller
         Log::info('Persona encontrada: ' . json_encode($persona));
         return response()->json($persona);
     }
+
+    public function buscar(Request $request)
+    {
+        $query = $request->get('q');
+
+        $personas = Persona::where('nombres', 'LIKE', '%' . $query . '%')
+            ->orWhere('ci', 'LIKE', '%' . $query . '%')
+            ->orWhere('telefono', 'LIKE', '%' . $query . '%')
+            ->get();
+
+        return response()->json($personas);
+    }
 }

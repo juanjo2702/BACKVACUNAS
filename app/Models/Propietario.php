@@ -15,4 +15,10 @@ class Propietario extends Model
     {
         return $this->belongsTo(Persona::class, 'persona_id');
     }
+    // Definir la relación con Propietario si aplica
+    // Definir la relación con Mascotas
+    public function mascotas()
+    {
+        return $this->hasMany(Mascota::class);
+    }
 }

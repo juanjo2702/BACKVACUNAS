@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Mascota extends Model
 {
@@ -44,5 +45,10 @@ class Mascota extends Model
     public function historiales()
     {
         return $this->hasMany(HistoriaVacuna::class, 'mascota_id');
+    }
+    // Accesor para obtener la URL completa de la imagen
+    public function getFotoAttribute($value)
+    {
+        return $value ? Storage::url($value) : null;
     }
 }

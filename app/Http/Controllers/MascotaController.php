@@ -6,6 +6,8 @@ use App\Models\Mascota;
 use App\Http\Requests\StoreMascotaRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateMascotaRequest;
+use App\Models\HistoriaVacuna;
+
 
 class MascotaController extends Controller
 {
@@ -79,13 +81,35 @@ class MascotaController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Mascota $mascota)
+
+    public function obtenerPorPropietario($id)
     {
-        //
+        $mascotas = Mascota::where('propietario_id', $id)->get();
+        return response()->json($mascotas);
     }
+    public function obtenerMascotasPorPropietario($id)
+    {
+        $mascotas = Mascota::where('propietario_id', $id)->get();
+
+        // Asegurarnos de devolver la URL completa de la imagen frontal
+        foreach ($mascotas as $mascota) {
+            $mascota->foto_frontal_url = $mascota->fotoFrontal
+                ? asset('storage/' . $mascota->fotoFrontal)
+                : asset('images/placeholder.png'); // Imagen por defecto si no hay foto
+        }
+
+        return response()->json($mascotas);
+    }
+    public function show($id) {
+        $mascota = Mascota::with('propietario')->find($id);
+        return response()->json($mascota);
+      }
+      public function getByPropietario($propietarioId)
+{
+    $mascotas = Mascota::where('propietario_id', $propietarioId)->get();
+    return response()->json($mascotas);
+}
+
 
     /**
      * Show the form for editing the specified resource.
