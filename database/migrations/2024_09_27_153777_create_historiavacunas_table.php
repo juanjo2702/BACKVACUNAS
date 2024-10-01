@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('historiavacunas', function (Blueprint $table) {
             $table->id(); // Clave primaria
+            $table->integer('estado');
+            $table->integer('motivo')->nullable();
             $table->unsignedBigInteger('mascota_id'); // Relación con la tabla de mascotas
             $table->unsignedBigInteger('alcance_id'); // Relación con la tabla de alcance
             $table->unsignedBigInteger('participacion_id'); // Relación con la tabla de participación o responsables

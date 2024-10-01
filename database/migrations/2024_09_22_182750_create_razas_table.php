@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('razas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
+            $table->integer('tipo');
             $table->timestamps();
         });
     }

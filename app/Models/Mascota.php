@@ -40,4 +40,9 @@ class Mascota extends Model
     {
         return $this->belongsTo(Raza::class, 'raza_id');
     }
+
+    public function historiales()
+    {
+        return $this->hasMany(HistoriaVacuna::class, 'mascota_id');
+    }
 }

@@ -22,4 +22,10 @@ class Brigada extends Model
     {
         return $this->belongsTo(Zona::class);
     }
+
+     // Relación con el modelo Participacion
+     public function participaciones()
+     {
+         return $this->hasMany(Participacion::class, 'brigada_id');
+     }
 }

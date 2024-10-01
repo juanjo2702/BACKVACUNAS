@@ -43,7 +43,7 @@ class PersonaController extends Controller
 
             $persona->save();
 
-            return response()->json(['message' => 'Persona registrada correctamente', 'persona' => $persona], 201); // Código 201 Creado
+            return response()->json(['message' => 'Persona registrada correctamente', 'persona' => $persona, 'id' => $persona->id], 201); // Código 201 Creado
         } catch (ValidationException $e) {
             // Capturamos errores de validación
             return response()->json([

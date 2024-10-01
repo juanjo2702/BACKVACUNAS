@@ -40,8 +40,8 @@ class MascotaController extends Controller
             'color' => 'required|string|max:50',
             'descripcion' => 'nullable|string',
             'tamanio' => 'required|string|max:50',
-            'fotoFrontal' => 'nullable|string',
-            'fotoHorizontal' => 'nullable|string',
+            'fotoFrontal' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'fotoLateral' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'estadoMascota' => 'nullable|string|max:50',
             'estado' => 'nullable|boolean',
             'raza_id' => 'required|exists:razas,id',
@@ -50,7 +50,22 @@ class MascotaController extends Controller
 
         try {
             // Crear una nueva mascota
-            $mascota = Mascota::create($request->all());
+            $mascotaData = $request->all();
+
+            // Manejar la subida de la imagen frontal
+            if ($request->hasFile('fotoFrontal')) {
+                $frontalPath = $request->file('fotoFrontal')->store('images/mascotas', 'public');
+                $mascotaData['fotoFrontal'] = $frontalPath; // Guardar la ruta de la imagen frontal
+            }
+
+            // Manejar la subida de la imagen lateral
+            if ($request->hasFile('fotoLateral')) {
+                $lateralPath = $request->file('fotoLateral')->store('images/mascotas', 'public');
+                $mascotaData['fotoLateral'] = $lateralPath; // Guardar la ruta de la imagen lateral
+            }
+
+            // Crear la mascota con los datos proporcionados
+            $mascota = Mascota::create($mascotaData);
 
             return response()->json([
                 'message' => 'Mascota registrada con éxito',

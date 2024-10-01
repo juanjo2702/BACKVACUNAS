@@ -14,11 +14,12 @@ class PropietarioController extends Controller
         $propietarios = Propietario::with('persona')->get();
 
         // Opcionalmente, puedes modificar la estructura de los datos si deseas solo campos específicos
-        $propietariosConPersonas = $propietarios->map(function($propietario) {
+        $propietariosConPersonas = $propietarios->map(function ($propietario) {
             return [
                 'id' => $propietario->id,
                 'direccion' => $propietario->direccion,
                 'observaciones' => $propietario->observaciones,
+                'foto' => $propietario->foto ? asset('storage/' . $propietario->foto) : null, // Devolver la URL completa de la foto
                 'latitud' => $propietario->latitud,
                 'longitud' => $propietario->longitud,
                 'persona' => [
@@ -42,18 +43,23 @@ class PropietarioController extends Controller
         $request->validate([
             'direccion' => 'nullable|string|max:255',
             'observaciones' => 'nullable|string',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validar el tipo de archivo
             'latitud' => 'required',
             'longitud' => 'required',
-            'persona_id' => 'required|exists:personas,id',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048' // Validar el tipo de archivo
+            'persona_id' => 'required|exists:personas,id'
+
         ]);
 
+
+
+
         // Manejar la imagen
-        if ($request->hasFile('foto')) {
-            $path = $request->hasFile('foto') ? $request->file('foto')->store('fotos', 'public') : null; // Almacenar en el disco 'public' (puedes cambiar el disco según tu configuración)
-        } else {
-            $path = null; // Si no se subió una foto
-        }
+    if ($request->hasFile('foto')) {
+        // Almacenar la imagen en 'images/propietarios' dentro de 'public'
+        $path = $request->file('foto')->store('images/propietarios', 'public');
+    } else {
+        $path = null; // Si no se subió una foto
+    }
 
         $propietario = new Propietario();
         $propietario->direccion = $request->direccion;

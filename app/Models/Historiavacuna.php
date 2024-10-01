@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Historiavacuna extends Model
 {
     use HasFactory;
+
+    protected $table = 'historiavacunas';
+
+    public function mascota()
+    {
+        return $this->belongsTo(Mascota::class, 'mascota_id');
+    }
 }

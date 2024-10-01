@@ -16,4 +16,9 @@ class Persona extends Model
     {
         return $this->belongsTo(Usuario::class, 'usuario_id');
     }
+
+    public function miembro()
+    {
+        return $this->hasOne(Miembro::class, 'persona_id');
+    }
 }
