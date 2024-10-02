@@ -26,9 +26,9 @@ class Miembro extends Model
     }
 
     // Relación con el modelo Participacion
-    public function participaciones()
+    public function participacions()
     {
-        return $this->hasMany(Participacion::class, 'miembro_id');
+        return $this->hasMany(Participacion::class);
     }
 
 }

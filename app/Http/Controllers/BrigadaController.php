@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Brigada;
 use App\Models\Usuario;
+use App\Models\Miembro;
 use Illuminate\Http\Request;
 
 class BrigadaController extends Controller
@@ -43,6 +44,22 @@ class BrigadaController extends Controller
             return response()->json([
                 'exists' => false
             ], 200);
+        }
+    }
+    public function getMiembrosBrigada($brigadaId)
+    {
+        try {
+            // Buscar la brigada por su ID
+            $brigada = Brigada::findOrFail($brigadaId);
+
+            // Usar la relación 'participacions' y la relación con la tabla 'persona'
+            $miembros = Miembro::whereHas('participacions', function($query) use ($brigadaId) {
+                $query->where('brigada_id', $brigadaId);
+            })->with('persona')->get();
+
+            return response()->json($miembros, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }

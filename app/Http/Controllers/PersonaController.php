@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 class PersonaController extends Controller
 {
     // Método para listar personas
@@ -87,6 +89,20 @@ class PersonaController extends Controller
         $personas = Persona::where('nombres', 'LIKE', '%' . $query . '%')
             ->orWhere('ci', 'LIKE', '%' . $query . '%')
             ->orWhere('telefono', 'LIKE', '%' . $query . '%')
+            ->get();
+
+        return response()->json($personas);
+    }
+    public function buscarPersonas(Request $request)
+    {
+        $query = $request->input('q');
+
+        // Buscamos personas por nombres, apellidos, CI o teléfono
+        $personas = Persona::where(DB::raw("CONCAT(nombres, ' ', apellidos)"), 'LIKE', "%{$query}%")
+            ->orWhere('nombres', 'LIKE', "%{$query}%")
+            ->orWhere('apellidos', 'LIKE', "%{$query}%")
+            ->orWhere('ci', 'LIKE', "%{$query}%")
+            ->orWhere('telefono', 'LIKE', "%{$query}%")
             ->get();
 
         return response()->json($personas);

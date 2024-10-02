@@ -7,7 +7,8 @@ use App\Http\Requests\StoreMascotaRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateMascotaRequest;
 use App\Models\HistoriaVacuna;
-
+use App\Models\Alcance;
+use App\Models\Campania;
 
 class MascotaController extends Controller
 {
@@ -100,38 +101,64 @@ class MascotaController extends Controller
 
         return response()->json($mascotas);
     }
-    public function show($id) {
+    public function show($id)
+    {
         $mascota = Mascota::with('propietario')->find($id);
         return response()->json($mascota);
-      }
-      public function getByPropietario($propietarioId)
-{
-    $mascotas = Mascota::where('propietario_id', $propietarioId)->get();
-    return response()->json($mascotas);
-}
-
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Mascota $mascota)
-    {
-        //
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateMascotaRequest $request, Mascota $mascota)
+    public function getByPropietario($propietarioId)
     {
-        //
+        $mascotas = Mascota::where('propietario_id', $propietarioId)->get();
+        return response()->json($mascotas);
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Mascota $mascota)
+    public function obtenerRazaPorMascota($id)
     {
-        //
+        // Obtener la mascota junto con la relación de raza
+        $mascota = Mascota::with('raza')->find($id);
+
+        if (!$mascota) {
+            return response()->json(['error' => 'Mascota no encontrada'], 404);
+        }
+
+        // Si la mascota tiene una raza, obtenemos el nombre de la raza
+        $raza = $mascota->raza ? $mascota->raza->nombre : 'Sin raza';
+
+        // Retornamos el nombre de la raza
+        return response()->json([
+            'raza' => $raza
+        ]);
+    }
+    public function obtenerHistorialVacunasPorMascota($mascotaId)
+    {
+        // Obtener los tres últimos registros de la tabla historiavacunas para la mascota
+        $historialVacunas = Historiavacuna::where('mascota_id', $mascotaId)
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
+
+        $vacunas = [];
+
+        foreach ($historialVacunas as $registro) {
+            // Obtener el estado de vacunación y motivo si no está vacunado
+            $vacuna = [
+                'estado' => $registro->estado,
+                'motivo' => $registro->estado == 0 ? $registro->motivo : null, // Solo si no está vacunado
+                'fecha' => $registro->created_at
+            ];
+
+            // Obtener el alcance y campaña
+            $alcance = Alcance::find($registro->alcance_id);
+            if ($alcance) {
+                $campania = Campania::find($alcance->campania_id);
+                if ($campania) {
+                    $vacuna['campania_nombre'] = $campania->nombre;
+                    $vacuna['campania_fecha_fin'] = $campania->fechaFinal;
+                }
+            }
+
+            $vacunas[] = $vacuna;
+        }
+
+        return response()->json($vacunas);
     }
 }

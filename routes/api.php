@@ -53,13 +53,16 @@ Route::get('/brigadas/usuario/{usuarioId}', [BrigadaController::class, 'getBriga
 Route::get('/mascotas/propietario/{propietarioId}', [MascotaController::class, 'getByPropietario']);
 Route::get('/propietarios/{propietarioId}/mascotas', [PropietarioController::class, 'getPropietarioConMascotas']);
 Route::get('/razas', [RazaController::class, 'getRazas']);
+Route::get('brigadas/{id}/miembros', [BrigadaController::class, 'getMiembrosBrigada']);
+Route::get('/mascota/{id}/raza', [MascotaController::class, 'obtenerRazaPorMascota']);
 // Ruta para buscar personas o propietarios
 Route::get('/buscar-personas', [PropietarioController::class, 'buscarPersonas']);
-
+Route::post('/historiavacunas', [HistoriavacunaController::class, 'guardarHistorialVacuna']);
 // Ruta para obtener las mascotas de un propietario
 Route::get('/propietario/{id}/mascotas', [PropietarioController::class, 'obtenerMascotas']);
 Route::post('/historiavacunas', [HistoriavacunaController::class, 'store']);
-
+Route::get('/buscar-personas', [PersonaController::class, 'buscarPersonas']);
 Route::get('/mascotas/{id}', 'MascotaController@show');
 
 Route::get('/dashboard-data', [DashboardController::class, 'getDashboardData']);
+Route::get('/mascota/{mascotaId}/historial-vacunas', [MascotaController::class, 'obtenerHistorialVacunasPorMascota']);
