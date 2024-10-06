@@ -111,7 +111,8 @@ class PropietarioController extends Controller
     public function obtenerMascotas($id)
     {
         // Encuentra al propietario y sus mascotas usando la relación definida en el modelo
-        $propietario = Propietario::with('mascotas')->find($id);
+        $persona = Persona::with('propietario')->find($id);
+        $propietario = Propietario::with('mascotas')->find($persona->propietario->id);
 
         if (!$propietario) {
             return response()->json(['message' => 'Propietario no encontrado'], 404);

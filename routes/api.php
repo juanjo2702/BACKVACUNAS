@@ -37,7 +37,7 @@ Route::apiResource('/propietarios', PropietarioController::class);
 Route::apiResource('/razas', RazaController::class);
 Route::apiResource('/mascotas', MascotaController::class);
 Route::apiResource('/rols', RolController::class);
-Route::apiResource('usuarios', UsuarioController::class);
+Route::apiResource('/usuarios', UsuarioController::class);
 Route::apiResource('/zonas', ZonaController::class);
 Route::apiResource('/campanias', CampaniaController::class);
 Route::apiResource('/brigadas', BrigadaController::class);
