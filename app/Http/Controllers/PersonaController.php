@@ -82,6 +82,17 @@ class PersonaController extends Controller
         return response()->json($persona);
     }
 
+    public function show($id)
+    {
+        $persona = Persona::find($id);
+
+        if (!$persona) {
+            return response()->json(['error' => 'Persona no encontrada'], 404);
+        }
+
+        return response()->json($persona);
+    }
+
     public function buscar(Request $request)
     {
         $query = $request->get('q');

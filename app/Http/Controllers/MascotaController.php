@@ -43,8 +43,8 @@ class MascotaController extends Controller
             'color' => 'required|string|max:50',
             'descripcion' => 'nullable|string',
             'tamanio' => 'required|string|max:50',
-            'fotoFrontal' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'fotoLateral' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'fotoFrontal' => 'nullable|image|mimes:jpeg,png,jpg',
+            'fotoLateral' => 'nullable|image|mimes:jpeg,png,jpg',
             'estadoMascota' => 'nullable|string|max:50',
             'estado' => 'nullable|boolean',
             'raza_id' => 'required|exists:razas,id',
@@ -160,5 +160,17 @@ class MascotaController extends Controller
         }
 
         return response()->json($vacunas);
+    }
+
+    public function getMascotasByPropietario($propietario_id)
+    {
+        try {
+            $mascotas = Mascota::where('propietario_id', $propietario_id)->get();
+
+
+            return response()->json($mascotas, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'No se pudieron obtener las mascotas'], 500);
+        }
     }
 }

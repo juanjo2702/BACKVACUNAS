@@ -45,7 +45,7 @@ class PropietarioController extends Controller
             'persona_id' => 'required|exists:personas,id',
             'direccion' => 'nullable|string|max:255',
             'observaciones' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validar el tipo de archivo
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg', // Validar el tipo de archivo
             'latitud' => 'required',
             'longitud' => 'required'
         ]);
@@ -91,6 +91,13 @@ class PropietarioController extends Controller
             return response()->json(['error' => 'Propietario no encontrado'], 404);
         }
     }
+    public function show($id)
+    {
+        $propietario = Propietario::with('persona')->findOrFail($id);
+        dd($propietario); // Verifica si trae los datos de la persona
+        return response()->json($propietario);
+    }
+
 
     public function buscarPersonas(Request $request)
     {
@@ -100,8 +107,8 @@ class PropietarioController extends Controller
         if ($query) {
             // Buscar personas donde el nombre o apellido contenga el término de búsqueda
             $personas = Persona::where('nombres', 'LIKE', '%' . $query . '%')
-                                ->orWhere('apellidos', 'LIKE', '%' . $query . '%')
-                                ->get();
+                ->orWhere('apellidos', 'LIKE', '%' . $query . '%')
+                ->get();
         } else {
             $personas = [];
         }
@@ -120,5 +127,15 @@ class PropietarioController extends Controller
 
         // Retorna las mascotas del propietario
         return response()->json($propietario->mascotas);
+    }
+
+    public function getPropietarioWithMascotas($propietario_id)
+    {
+        try {
+            $propietario = Propietario::with('mascotas')->findOrFail($propietario_id);
+            return response()->json($propietario, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'No se pudo obtener el propietario con sus mascotas'], 500);
+        }
     }
 }
