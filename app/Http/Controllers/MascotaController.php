@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Mascota;
@@ -10,6 +9,8 @@ use App\Models\HistoriaVacuna;
 use App\Models\Alcance;
 use App\Models\Campania;
 
+
+
 class MascotaController extends Controller
 {
     /**
@@ -19,7 +20,7 @@ class MascotaController extends Controller
     {
         try {
             // Obtener todas las mascotas junto con sus relaciones (propietario y raza)
-            $mascotas = Mascota::with(['propietarios', 'razas'])->get();
+            $mascotas = Mascota::with(['propietario', 'raza'])->get();
             return response()->json($mascotas, 200);
         } catch (\Exception $e) {
             return response()->json([

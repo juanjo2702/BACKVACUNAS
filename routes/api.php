@@ -28,11 +28,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Rutas protegidas con middleware
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Rutas de autenticación
 Route::post('/login', [UsuarioController::class, 'login']);
-Route::apiResource('/personas',PersonaController::class);
+
+// Rutas de recursos principales
+Route::apiResource('/personas', PersonaController::class);
 Route::apiResource('/propietarios', PropietarioController::class);
 Route::apiResource('/razas', RazaController::class);
 Route::apiResource('/mascotas', MascotaController::class);
@@ -46,27 +51,23 @@ Route::apiResource('/alcances', AlcanceController::class);
 Route::apiResource('/participacions', ParticipacionController::class);
 Route::apiResource('/historiavacunas', HistoriavacunaController::class);
 
+// Rutas adicionales personalizadas
 Route::get('/jefes-zona', [UsuarioController::class, 'getJefesZona']);
-Route::get('/personas/{usuario_id}', [PersonaController::class, 'getByUsuarioId']);
 Route::get('/personas/usuario/{usuario_id}', [PersonaController::class, 'getByUsuarioId']);
 Route::get('/brigadas/usuario/{usuarioId}', [BrigadaController::class, 'getBrigadaByUsuario']);
 Route::get('/mascotas/propietario/{propietarioId}', [MascotaController::class, 'getByPropietario']);
-/* Route::get('/propietarios/{propietarioId}/mascotas', [PropietarioController::class, 'getPropietarioConMascotas']); */
 Route::get('/razas', [RazaController::class, 'getRazas']);
-Route::get('brigadas/{id}/miembros', [BrigadaController::class, 'getMiembrosBrigada']);
+Route::get('/brigadas/{id}/miembros', [BrigadaController::class, 'getMiembrosBrigada']);
 Route::get('/mascota/{id}/raza', [MascotaController::class, 'obtenerRazaPorMascota']);
-// Ruta para buscar personas o propietarios
-Route::get('/buscar-personas', [PropietarioController::class, 'buscarPersonas']);
-Route::post('/historiavacunas', [HistoriavacunaController::class, 'guardarHistorialVacuna']);
-// Ruta para obtener las mascotas de un propietario
-Route::get('/propietario/{id}/mascotas', [PropietarioController::class, 'obtenerMascotas']);
 Route::post('/historiavacunas', [HistoriavacunaController::class, 'store']);
-Route::get('/buscar-personas', [PersonaController::class, 'buscarPersonas']);
-Route::get('/mascotas/{id}', 'MascotaController@show');
-
-Route::get('/dashboard-data', [DashboardController::class, 'getDashboardData']);
+Route::get('/buscar-personas', [PropietarioController::class, 'buscarPersonas']);
+Route::get('/propietario/{id}/mascotas', [PropietarioController::class, 'obtenerMascotas']);
 Route::get('/mascota/{mascotaId}/historial-vacunas', [MascotaController::class, 'obtenerHistorialVacunasPorMascota']);
-
+Route::get('/dashboard-data', [DashboardController::class, 'getDashboardData']);
 Route::get('/propietarios/{id}', [PropietarioController::class, 'show']);
-Route::get('/personas/{id}', [PersonaController::class, 'show']);
 Route::get('/propietarios/{propietario_id}/mascotas', [MascotaController::class, 'getMascotasByPropietario']);
+Route::get('/personas/{id}', [PersonaController::class, 'show']);
+Route::get('/usuarios-filtro', [UsuarioController::class, 'filtrarPorRolEstado']);
+
+
+

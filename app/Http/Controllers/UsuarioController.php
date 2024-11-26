@@ -90,6 +90,30 @@ class UsuarioController extends Controller
         return response()->json(['id' => $usuario->id], 201);
     }
 
+    public function filtrarPorRolEstado(Request $request)
+    {
+        // Obtener parámetros del request
+        $rolId = $request->query('rol_id');
+        $estado = $request->query('estado');
+    
+        // Construir la consulta
+        $query = Usuario::query();
+    
+        if ($rolId) {
+            $query->where('rol_id', $rolId);
+        }
+    
+        if (!is_null($estado)) { // Verificar que el estado no sea nulo
+            $query->where('estado', $estado);
+        }
+    
+        // Obtener los usuarios filtrados
+        $usuarios = $query->get();
+    
+        // Devolver la respuesta
+        return response()->json($usuarios, 200);
+    }
+
     public function getJefesZona()
     {
         // Consultamos los usuarios con rol de jefe de zona (rol_id = 2)
@@ -101,4 +125,5 @@ class UsuarioController extends Controller
 
         return response()->json($jefesZona);
     }
+    
 }
