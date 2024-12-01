@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Propietario;
 use App\Models\Persona;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class PropietarioController extends Controller
 {
@@ -137,5 +139,103 @@ class PropietarioController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'No se pudo obtener el propietario con sus mascotas'], 500);
         }
+    }
+
+    public function showWithPerson($id)
+    {
+        try {
+            // Obtiene el propietario con los datos relacionados de la persona
+            $propietario = Propietario::with('persona')->find($id);
+
+            if (!$propietario) {
+                return response()->json(['error' => 'Propietario no encontrado'], 404);
+            }
+
+            return response()->json($propietario);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error en el servidor: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $persona = Persona::find($id);
+
+        if (!$persona) {
+            return response()->json(['error' => 'Persona no encontrada'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'nombres' => 'required|string|max:255',
+            'apellidos' => 'required|string|max:255',
+            'ci' => 'nullable|string|max:20|unique:personas,ci,' . $id,
+            'telefono' => 'nullable|string|max:20',
+            'direccion' => 'nullable|string|max:255',
+            'observaciones' => 'nullable|string|max:1000',
+            'latitud' => 'nullable|numeric',
+            'longitud' => 'nullable|numeric',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+        ]);
+
+        try {
+            // Actualizar los datos básicos de la persona
+            $persona->update([
+                'nombres' => $validatedData['nombres'],
+                'apellidos' => $validatedData['apellidos'],
+                'ci' => $validatedData['ci'],
+                'telefono' => $validatedData['telefono'],
+            ]);
+
+            // Actualizar datos del propietario relacionado
+            $propietario = $persona->propietario;
+            if ($propietario) {
+                $propietario->update([
+                    'direccion' => $validatedData['direccion'],
+                    'observaciones' => $validatedData['observaciones'],
+                    'latitud' => $validatedData['latitud'],
+                    'longitud' => $validatedData['longitud'],
+                ]);
+                if ($request->hasFile('foto')) {
+                    Log::info('Imagen recibida:', ['nombre' => $request->file('foto')->getClientOriginalName()]);
+                } else {
+                    Log::warning('No se recibió ninguna imagen en la solicitud.');
+                }
+
+                if ($request->hasFile('foto')) {
+                    // Elimina la imagen anterior, si existe
+                    if ($propietario->foto && Storage::exists("public/{$propietario->foto}")) {
+                        Storage::delete("public/{$propietario->foto}");
+                    }
+
+                    $path = $request->file('foto')->store('images/propietarios', 'public');
+                    $propietario->foto = $path;
+                } else {
+                    // Si no hay nueva imagen, conserva la actual
+                    $propietario->foto = $propietario->foto;
+                }
+                $propietario->save();
+            }
+
+            return response()->json(['message' => 'Persona y propietario actualizados correctamente'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al actualizar los datos', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function obtenerPersonasConPropietario(Request $request)
+    {
+        $query = $request->get('q'); // Obtener el término de búsqueda
+
+        $personas = Persona::with('propietario')
+            ->when($query, function ($queryBuilder) use ($query) {
+                $queryBuilder->where('nombres', 'LIKE', "%{$query}%")
+                    ->orWhere('apellidos', 'LIKE', "%{$query}%")
+                    ->orWhere('ci', 'LIKE', "%{$query}%")
+                    ->orWhere('telefono', 'LIKE', "%{$query}%");
+            })
+            ->get();
+
+        return response()->json($personas);
     }
 }

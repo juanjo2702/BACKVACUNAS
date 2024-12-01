@@ -79,3 +79,30 @@ Route::get('/zonas/centros', [ZonaController::class, 'getCentros']);
 Route::post('/brigadas/generar', [BrigadaController::class, 'generarBrigadas']);
 Route::get('/usuarios-filtro', [UsuarioController::class, 'filtrarPorRolEstado']);
 Route::get('/personas/{id}', [PersonaController::class, 'show']);
+
+Route::patch('/zonas/{id}/desactivar', [ZonaController::class, 'desactivar']);
+
+//RECIEN AÑADIDO JUANPA
+Route::get('/jefe-zona/{id}', [PersonaController::class, 'show']);
+Route::put('/jefe-zona/{id}', [PersonaController::class, 'update']);
+Route::put('/personas/{id}', [PersonaController::class, 'update']);
+Route::patch('/personas/{id}/desactivar', [PersonaController::class, 'desactivar']);
+Route::get('/propietarios/{id}/with-person', [PropietarioController::class, 'showWithPerson']);
+Route::get('/persona/{personaId}/propietario', [PersonaController::class, 'obtenerPropietarioPorPersona']);
+Route::get('/personas-con-propietarios', [PersonaController::class, 'obtenerPersonasConPropietario']);
+Route::get('/storage/{path}', function ($path) {
+    $path = storage_path('app/public/' . $path);
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path);
+})->where('path', '.*');
+
+Route::put('/propietarios/{id}', [PropietarioController::class, 'update']);
+
+Route::get('/personas/buscar-por-ci', [PersonaController::class, 'buscarPorCI']); // Busca por CI
+Route::get('/miembros', [MiembroController::class, 'getByPersonaId']);
+Route::get('/participacions', [ParticipacionController::class, 'checkParticipacion']);
+Route::get('/participaciones/brigada/{brigadaId}', [ParticipacionController::class, 'getParticipacionesByBrigada']);
+
+Route::get('/personas?filter=withUsuario', [PersonaController::class, 'indexWithUsuario']); // Con filtro

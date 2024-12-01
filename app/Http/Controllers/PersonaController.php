@@ -12,14 +12,20 @@ use Illuminate\Support\Facades\DB;
 class PersonaController extends Controller
 {
     // Método para listar personas
-    public function index()
+    public function index(Request $request)
     {
-        try {
-            $personas = Persona::with('usuario')->get();
-            return response()->json($personas, 200); // Respuesta con código 200 OK
-        } catch (QueryException $e) {
-            return response()->json(['error' => 'Error al obtener personas'], 500); // Manejo de error si algo sale mal
+        if ($request->has('filter') && $request->filter === 'withUsuario') {
+            // Filtrar personas con usuarios y roles específicos
+            $personas = Persona::with(['usuario' => function ($query) {
+                $query->where('rol_id', 2); // Rol JEFEZONA (ajusta según tu ID de rol)
+            }])->whereHas('usuario')->get();
+
+            return response()->json($personas);
         }
+
+        // Si no hay filtro, retorna todas las personas
+        $personas = Persona::with('propietario')->get();
+        return response()->json($personas);
     }
 
     // Método para guardar una nueva persona
@@ -117,5 +123,128 @@ class PersonaController extends Controller
             ->get();
 
         return response()->json($personas);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $persona = Persona::find($id);
+
+        if (!$persona) {
+            return response()->json(['error' => 'Persona no encontrada'], 404);
+        }
+
+        // Validar los datos recibidos
+        $validatedData = $request->validate([
+            'nombres' => 'required|string|max:255',
+            'apellidos' => 'required|string|max:255',
+            'ci' => 'nullable|string|max:20|unique:personas,ci,' . $id, // Permitir el mismo CI si no cambia
+            'telefono' => 'nullable|string|max:20',
+            'direccion' => 'nullable|string|max:255',
+            'observaciones' => 'nullable|string|max:1000',
+            'latitud' => 'nullable|numeric',
+            'longitud' => 'nullable|numeric',
+        ]);
+
+        try {
+            // Actualizar los datos de la persona
+            $persona->update([
+                'nombres' => $validatedData['nombres'],
+                'apellidos' => $validatedData['apellidos'],
+                'ci' => $validatedData['ci'],
+                'telefono' => $validatedData['telefono'],
+            ]);
+
+            // Actualizar o crear el propietario relacionado
+            $persona->propietario()->updateOrCreate(
+                ['persona_id' => $id],
+                [
+                    'direccion' => $validatedData['direccion'],
+                    'observaciones' => $validatedData['observaciones'],
+                    'latitud' => $validatedData['latitud'],
+                    'longitud' => $validatedData['longitud'],
+                ]
+            );
+
+            return response()->json(['message' => 'Persona y propietario actualizados correctamente'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al actualizar los datos', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function desactivar($id)
+    {
+        try {
+            $persona = Persona::findOrFail($id); // Buscar la persona por ID
+            $persona->estado = 0; // Cambiar el estado a inactivo
+            $persona->save(); // Guardar los cambios
+
+            return response()->json(['message' => 'Persona desactivada con éxito.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al desactivar la persona.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerPropietarioPorPersona($personaId)
+    {
+        $persona = Persona::find($personaId);
+
+        if (!$persona) {
+            return response()->json(['error' => 'Persona no encontrada'], 404);
+        }
+
+        $propietario = $persona->propietario; // Relación entre persona y propietario
+
+        if (!$propietario) {
+            return response()->json(['error' => 'Propietario no asociado a esta persona'], 404);
+        }
+
+        return response()->json($propietario);
+    }
+
+    public function obtenerPersonasConPropietario(Request $request)
+    {
+        $personas = Persona::where('estado', 1) // Filtra solo personas con estado 1
+            ->with('propietario') // Incluye los datos del propietario
+            ->get();
+        // Obtiene las personas junto con los datos del propietario asociado
+        $personas = Persona::with('propietario')->get();
+
+        // Formateamos los datos para incluir persona_id dentro del objeto de propietario
+        $result = $personas->map(function ($persona) {
+            return [
+                'id' => $persona->id,
+                'nombres' => $persona->nombres,
+                'apellidos' => $persona->apellidos,
+                'ci' => $persona->ci,
+                'telefono' => $persona->telefono,
+                'persona_id' => $persona->id, // Incluye el ID de la persona
+                'propietario' => $persona->propietario, // Información del propietario
+            ];
+        });
+
+        return response()->json($result);
+    }
+
+    public function buscarPorCI(Request $request)
+    {
+        Log::info('CI recibido para buscar:', ['ci' => $request->input('ci')]);
+
+        $request->validate([
+            'ci' => 'required|string|max:20'
+        ]);
+
+        $ci = $request->input('ci');
+
+        Log::info('Ejecutando consulta con CI:', ['ci' => $ci]);
+
+        $persona = Persona::where('ci', $ci)->first();
+
+        if ($persona) {
+            Log::info('Persona encontrada:', $persona->toArray());
+            return response()->json($persona, 200);
+        }
+
+        Log::warning('Persona no encontrada para CI:', ['ci' => $ci]);
+        return response()->json(['message' => 'Persona no encontrada'], 404);
     }
 }
