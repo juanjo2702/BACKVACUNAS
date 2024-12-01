@@ -22,4 +22,9 @@ class Campania extends Model
 
     // Si tu tabla tiene las columnas created_at y updated_at (timestamps)
     public $timestamps = true;
+
+    public function brigadas()
+    {
+        return $this->hasMany(Brigada::class, 'campania_id');
+    }
 }

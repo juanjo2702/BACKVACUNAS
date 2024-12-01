@@ -13,40 +13,40 @@ use App\Models\Brigada;
 class UsuarioController extends Controller
 {
     public function login(Request $request)
-{
-    // Validar los datos recibidos
-    $request->validate([
-        'nombre' => 'required|string',
-        'password' => 'required|string',
-    ]);
+    {
+        // Validar los datos recibidos
+        $request->validate([
+            'nombre' => 'required|string',
+            'password' => 'required|string',
+        ]);
 
-    // Buscar el usuario por nombre
-    $usuario = Usuario::where('nombre', $request->nombre)->first();
+        // Buscar el usuario por nombre
+        $usuario = Usuario::where('nombre', $request->nombre)->first();
 
-    // Verificar si el usuario existe y la contraseña es correcta
-    if (!$usuario || !Hash::check($request->password, $usuario->password)) {
+        // Verificar si el usuario existe y la contraseña es correcta
+        if (!$usuario || !Hash::check($request->password, $usuario->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Credenciales incorrectas'
+            ], 401);
+        }
+
+        // Iniciar sesión
+        Auth::login($usuario);
+
+        // Verificar si el usuario pertenece a una brigada
+        $brigada = Brigada::where('usuario_id', $usuario->id)->first();
+
+        // Si pertenece a una brigada, devolvemos un flag en la respuesta
+        $isBrigada = $brigada ? true : false;
+
         return response()->json([
-            'success' => false,
-            'message' => 'Credenciales incorrectas'
-        ], 401);
+            'success' => true,
+            'message' => 'Login exitoso',
+            'user' => $usuario,
+            'isBrigada' => $isBrigada  // Devuelve true si el usuario está en brigadas
+        ]);
     }
-
-    // Iniciar sesión
-    Auth::login($usuario);
-
-    // Verificar si el usuario pertenece a una brigada
-    $brigada = Brigada::where('usuario_id', $usuario->id)->first();
-
-    // Si pertenece a una brigada, devolvemos un flag en la respuesta
-    $isBrigada = $brigada ? true : false;
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Login exitoso',
-        'user' => $usuario,
-        'isBrigada' => $isBrigada  // Devuelve true si el usuario está en brigadas
-    ]);
-}
 
 
     // Método de logout (opcional, si se quiere implementar logout)
@@ -90,13 +90,40 @@ class UsuarioController extends Controller
         return response()->json(['id' => $usuario->id], 201);
     }
 
+    public function filtrarPorRolEstado(Request $request)
+    {
+        // Obtener parámetros del request
+        $rolId = $request->query('rol_id');
+        $estado = $request->query('estado');
+
+        // Construir la consulta
+        $query = Usuario::query();
+
+        if ($rolId) {
+            $query->where('rol_id', $rolId);
+        }
+
+        if (!is_null($estado)) { // Verificar que el estado no sea nulo
+            $query->where('estado', $estado);
+        }
+
+        // Obtener los usuarios filtrados
+        $usuarios = $query->get();
+
+        // Devolver la respuesta
+        return response()->json($usuarios, 200);
+    }
+
     public function getJefesZona()
     {
-        // Consultamos los usuarios con rol de jefe de zona (rol_id = 2)
         $jefesZona = DB::table('usuarios')
             ->join('personas', 'usuarios.id', '=', 'personas.usuario_id')
-            ->where('usuarios.rol_id', 2)  // Rol 2 es Jefe de Zona
-            ->select(DB::raw("CONCAT(personas.nombres, ' ', personas.apellidos) as nombreCompleto"), 'usuarios.id as usuario_id')
+            ->where('usuarios.rol_id', 2) // Rol 2 es Jefe de Zona
+            ->select(
+                'personas.id as persona_id', // ID de la persona
+                DB::raw("CONCAT(personas.nombres, ' ', personas.apellidos) as nombreCompleto"),
+                'usuarios.id as usuario_id' // ID del usuario
+            )
             ->get();
 
         return response()->json($jefesZona);

@@ -61,4 +61,16 @@ class ZonaController extends Controller
         // Devolver la zona actualizada
         return response()->json($zona, 200);
     }
+    public function getCentros()
+    {
+        try {
+            $centros = Zona::select('id', 'centro')
+                ->distinct('centro')
+                ->get();
+
+            return response()->json($centros, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

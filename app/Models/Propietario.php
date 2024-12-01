@@ -21,4 +21,6 @@ class Propietario extends Model
     {
         return $this->hasMany(Mascota::class);
     }
+
+
 }

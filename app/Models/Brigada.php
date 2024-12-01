@@ -9,7 +9,7 @@ class Brigada extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['usuario_id', 'zona_id', 'estado'];
+    protected $fillable = ['usuario_id', 'zona_id', 'campania_id', 'estado'];
 
     // Relación con el usuario (quien será miembro de la brigada)
     public function usuario()
@@ -23,9 +23,14 @@ class Brigada extends Model
         return $this->belongsTo(Zona::class);
     }
 
-     // Relación con el modelo Participacion
-     public function participaciones()
-     {
-         return $this->hasMany(Participacion::class, 'brigada_id');
-     }
+    // Relación con el modelo Participacion
+    public function participaciones()
+    {
+        return $this->hasMany(Participacion::class, 'brigada_id');
+    }
+
+    public function campania()
+    {
+        return $this->belongsTo(Campania::class, 'campania_id');
+    }
 }

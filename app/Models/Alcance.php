@@ -28,4 +28,5 @@ class Alcance extends Model
     {
         return $this->belongsTo(Persona::class, 'persona_id');
     }
+
 }

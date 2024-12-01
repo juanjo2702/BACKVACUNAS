@@ -30,4 +30,8 @@ class Zona extends Model
     {
         return $this->hasMany(Alcance::class);
     }
+    public function campania()
+    {
+        return $this->belongsTo(Campania::class, 'campania_id');
+    }
 }

@@ -70,3 +70,12 @@ Route::get('/mascota/{mascotaId}/historial-vacunas', [MascotaController::class, 
 Route::get('/propietarios/{id}', [PropietarioController::class, 'show']);
 Route::get('/personas/{id}', [PersonaController::class, 'show']);
 Route::get('/propietarios/{propietario_id}/mascotas', [MascotaController::class, 'getMascotasByPropietario']);
+Route::get('/campanias/{id}/zonas', [CampaniaController::class, 'getZonasByCampania']);
+Route::get('/campanias/{id}/brigadas', [CampaniaController::class, 'getBrigadasByCampania']);
+Route::get('/alcances/{campaniaId}/zonas', [AlcanceController::class, 'getZonasByCampania']);
+Route::get('/alcances/campania/{campaniaId}', [AlcanceController::class, 'getZonasByCampania']);
+Route::get('/mascota/{mascotaId}/historial-vacunas', [HistoriavacunaController::class, 'getHistorialPorMascota']);
+Route::get('/zonas/centros', [ZonaController::class, 'getCentros']);
+Route::post('/brigadas/generar', [BrigadaController::class, 'generarBrigadas']);
+Route::get('/usuarios-filtro', [UsuarioController::class, 'filtrarPorRolEstado']);
+Route::get('/personas/{id}', [PersonaController::class, 'show']);
