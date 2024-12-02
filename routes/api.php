@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('/login', [UsuarioController::class, 'login']);
-Route::apiResource('/personas',PersonaController::class);
+Route::apiResource('/personas', PersonaController::class);
 Route::apiResource('/propietarios', PropietarioController::class);
 Route::apiResource('/razas', RazaController::class);
 Route::apiResource('/mascotas', MascotaController::class);
@@ -105,4 +105,7 @@ Route::get('/miembros', [MiembroController::class, 'getByPersonaId']);
 Route::get('/participacions', [ParticipacionController::class, 'checkParticipacion']);
 Route::get('/participaciones/brigada/{brigadaId}', [ParticipacionController::class, 'getParticipacionesByBrigada']);
 
-Route::get('/personas?filter=withUsuario', [PersonaController::class, 'indexWithUsuario']); // Con filtro
+Route::get('/personas?filter=withUsuario', action: [PersonaController::class, 'indexWithUsuario']);
+Route::patch('/mascotas/{id}/desactivar', [MascotaController::class, 'desactivar']);
+Route::get('/getRazas', [RazaController::class, 'getRazas']);
+Route::put('/mascotas/{id}', [MascotaController::class, 'update']);
