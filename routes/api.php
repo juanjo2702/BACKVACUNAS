@@ -79,6 +79,7 @@ Route::get('/zonas/centros', [ZonaController::class, 'getCentros']);
 Route::post('/brigadas/generar', [BrigadaController::class, 'generarBrigadas']);
 Route::get('/usuarios-filtro', [UsuarioController::class, 'filtrarPorRolEstado']);
 Route::get('/personas/{id}', [PersonaController::class, 'show']);
+Route::put('/jefe-zona/{id}/update', [PersonaController::class, 'updateJefeZona']);
 
 //RECIEN AÑADIDO JUANPA
 Route::get('/jefe-zona/{id}', [PersonaController::class, 'show']);

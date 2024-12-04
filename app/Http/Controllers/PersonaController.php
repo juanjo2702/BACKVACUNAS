@@ -15,16 +15,18 @@ class PersonaController extends Controller
     public function index(Request $request)
     {
         if ($request->has('filter') && $request->filter === 'withUsuario') {
-            // Filtrar personas con usuarios y roles específicos
+            // Traer personas con usuario relacionado y rol_id = 2 (jefes de zona)
             $personas = Persona::with(['usuario' => function ($query) {
-                $query->where('rol_id', 2); // Rol JEFEZONA (ajusta según tu ID de rol)
-            }])->whereHas('usuario')->get();
+                $query->where('rol_id', 2);
+            }])->whereHas('usuario', function ($query) {
+                $query->where('rol_id', 2);
+            })->get();
 
             return response()->json($personas);
         }
 
-        // Si no hay filtro, retorna todas las personas
-        $personas = Persona::with('propietario')->get();
+        // Si no hay filtro, retornar todas las personas
+        $personas = Persona::all();
         return response()->json($personas);
     }
 
@@ -90,7 +92,7 @@ class PersonaController extends Controller
 
     public function show($id)
     {
-        $persona = Persona::find($id);
+        $persona = Persona::with('usuario')->find($id); // Incluye la relación con el usuario
 
         if (!$persona) {
             return response()->json(['error' => 'Persona no encontrada'], 404);
@@ -246,5 +248,47 @@ class PersonaController extends Controller
 
         Log::warning('Persona no encontrada para CI:', ['ci' => $ci]);
         return response()->json(['message' => 'Persona no encontrada'], 404);
+    }
+    public function updateJefeZona(Request $request, $id)
+    {
+        $persona = Persona::find($id);
+
+        if (!$persona) {
+            return response()->json(['error' => 'Persona no encontrada'], 404);
+        }
+
+        // Validar los datos enviados
+        $validatedData = $request->validate([
+            'nombres' => 'required|string|max:255',
+            'apellidos' => 'required|string|max:255',
+            'ci' => 'nullable|string|max:20|unique:personas,ci,' . $id,
+            'telefono' => 'nullable|string|max:20',
+            'usuario.nombre' => 'required|string|max:255', // Nombre de usuario obligatorio
+            'usuario.password' => 'nullable|string|min:6', // Contraseña opcional
+        ]);
+
+        try {
+            // Actualizar los datos de la persona
+            $persona->update([
+                'nombres' => $validatedData['nombres'],
+                'apellidos' => $validatedData['apellidos'],
+                'ci' => $validatedData['ci'],
+                'telefono' => $validatedData['telefono'],
+            ]);
+
+            // Actualizar los datos del usuario relacionado
+            if ($persona->usuario) {
+                $persona->usuario->update([
+                    'nombre' => $validatedData['usuario']['nombre'],
+                    'password' => isset($validatedData['usuario']['password'])
+                        ? bcrypt($validatedData['usuario']['password']) // Encripta la contraseña si se envía
+                        : $persona->usuario->password, // Mantener la contraseña actual si no se envía una nueva
+                ]);
+            }
+
+            return response()->json(['message' => 'Jefe de Zona actualizado correctamente'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al actualizar los datos', 'details' => $e->getMessage()], 500);
+        }
     }
 }
