@@ -10,6 +10,8 @@ use App\Models\HistoriaVacuna;
 use App\Models\Alcance;
 use App\Models\Campania;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
+
 
 class MascotaController extends Controller
 {
@@ -240,3 +242,31 @@ class MascotaController extends Controller
     }
 
 }
+
+
+
+
+/* public function desactivar($id)
+{
+    try {
+        // Buscar la mascota
+        $mascota = Mascota::findOrFail($id);
+
+        // Cambiar el estado a 0 (desactivado)
+        $mascota->estado = 0;
+        $mascota->save();
+
+        return response()->json([
+            'message' => 'La mascota ha sido desactivada correctamente.',
+            'mascota' => $mascota
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'No se pudo desactivar la mascota',
+            'message' => $e->getMessage(),
+        ], 500);
+    }
+} */
+
+    
+

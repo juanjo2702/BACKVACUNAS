@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Propietario;
 use App\Models\Persona;
+use App\Models\Persona;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -37,46 +38,85 @@ class PropietarioController extends Controller
 
         // Return the modified data
         return response()->json($propietariosConPersonas);
+        // Fetch propietarios with related 'persona' data
+        $propietarios = Propietario::with('persona')->get();
+
+        // Modify the structure to include the full URL for the 'foto' field
+        $propietariosConPersonas = $propietarios->map(function ($propietario) {
+            return [
+                'id' => $propietario->id,
+                'direccion' => $propietario->direccion,
+                'observaciones' => $propietario->observaciones,
+                // Here is where you transform the 'foto' field to include the full asset URL
+                'foto' => $propietario->foto ? asset('storage/' . $propietario->foto) : null,
+                'latitud' => $propietario->latitud,
+                'longitud' => $propietario->longitud,
+                'persona' => [
+                    'nombres' => $propietario->persona->nombres,
+                    'apellidos' => $propietario->persona->apellidos,
+                    'ci' => $propietario->persona->ci,
+                    'telefono' => $propietario->persona->telefono,
+                ]
+            ];
+        });
+
+        // Return the modified data
+        return response()->json($propietariosConPersonas);
     }
 
     // Método para guardar un nuevo propietario
     public function store(Request $request)
     {
         // Validamos los datos requeridos
+        // Validamos los datos requeridos
         $request->validate([
+            'persona_id' => 'required|exists:personas,id',
             'persona_id' => 'required|exists:personas,id',
             'direccion' => 'nullable|string|max:255',
             'observaciones' => 'nullable|string',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg', // Validar el tipo de archivo
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg', // Validar el tipo de archivo
             'latitud' => 'required',
+            'longitud' => 'required'
             'longitud' => 'required'
         ]);
 
         // Manejo de la imagen si es que se ha subido
+        // Manejo de la imagen si es que se ha subido
         if ($request->hasFile('foto')) {
+            // Guardamos la imagen en la carpeta 'public/images/propietarios'
+            $path = $request->file('foto')->store('images/propietarios', 'public');
             // Guardamos la imagen en la carpeta 'public/images/propietarios'
             $path = $request->file('foto')->store('images/propietarios', 'public');
         } else {
             $path = null; // Si no se subió una foto, establecemos `null`
+            $path = null; // Si no se subió una foto, establecemos `null`
         }
 
+        // Creamos un nuevo registro de Propietario
         // Creamos un nuevo registro de Propietario
         $propietario = new Propietario();
         $propietario->direccion = $request->direccion;
         $propietario->observaciones = $request->observaciones;
         $propietario->foto = $path; // Guardamos la ruta de la imagen
+        $propietario->foto = $path; // Guardamos la ruta de la imagen
         $propietario->latitud = $request->latitud;
         $propietario->longitud = $request->longitud;
         $propietario->persona_id = $request->persona_id;
 
+
         try {
+            // Guardamos el propietario en la base de datos
             // Guardamos el propietario en la base de datos
             $propietario->save();
         } catch (\Illuminate\Database\QueryException $e) {
             // Si ocurre un error al guardar, devolvemos un error JSON
             return response()->json(['error' => 'Error al registrar el propietario.', 'message' => $e->getMessage()], 500);
+            // Si ocurre un error al guardar, devolvemos un error JSON
+            return response()->json(['error' => 'Error al registrar el propietario.', 'message' => $e->getMessage()], 500);
         }
 
+        // Devolvemos una respuesta JSON indicando éxito
         // Devolvemos una respuesta JSON indicando éxito
         return response()->json(['message' => 'Propietario registrado correctamente', 'propietario' => $propietario], 201);
     }

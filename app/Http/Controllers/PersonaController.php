@@ -1,8 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Storage;
 
 use App\Models\Persona;
+use App\Models\Usuario;
+use App\Models\Propietario;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
@@ -42,6 +45,8 @@ class PersonaController extends Controller
                 'ci' => 'nullable|string|max:20|unique:personas,ci', // validamos para que el campo sea único en la tabla
                 'telefono' => 'nullable|string|max:20',
                 'usuario_id' => 'nullable|exists:usuarios,id' // Validamos si se envía usuario_id y que exista en la tabla usuarios
+                'telefono' => 'nullable|string|max:20',
+                'usuario_id' => 'nullable|exists:usuarios,id' // Validamos si se envía usuario_id y que exista en la tabla usuarios
             ]);
 
             // Creación de la nueva persona
@@ -52,8 +57,11 @@ class PersonaController extends Controller
             $persona->telefono = $validated['telefono'] ?? null; // Lo mismo con 'telefono'
             $persona->usuario_id = $validated['usuario_id'] ?? null; // Asignar el usuario_id si se envía
 
+            $persona->usuario_id = $validated['usuario_id'] ?? null; // Asignar el usuario_id si se envía
+
             $persona->save();
 
+            return response()->json(['message' => 'Persona registrada correctamente', 'persona' => $persona, 'id' => $persona->id], 201); // Código 201 Creado
             return response()->json(['message' => 'Persona registrada correctamente', 'persona' => $persona, 'id' => $persona->id], 201); // Código 201 Creado
         } catch (ValidationException $e) {
             // Capturamos errores de validación

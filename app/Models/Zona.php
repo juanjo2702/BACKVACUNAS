@@ -18,6 +18,7 @@ class Zona extends Model
         'centro',
         'ciudad',
         'departamento',
+        'estado'
     ];
 
     public function brigadas()

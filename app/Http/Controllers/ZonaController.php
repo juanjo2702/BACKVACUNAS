@@ -70,4 +70,18 @@ class ZonaController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    /* public function desactivar($id)
+    {
+        try {
+            $zona = Zona::findOrFail($id); // Buscar la zona por ID
+            $zona->estado = 0; // Cambiar el estado a 0 (inactivo)
+            $zona->save(); // Guardar los cambios
+
+            return response()->json(['message' => 'Zona desactivada con éxito.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al desactivar la zona.', 'error' => $e->getMessage()], 500);
+        }
+    } */
+
+
 }

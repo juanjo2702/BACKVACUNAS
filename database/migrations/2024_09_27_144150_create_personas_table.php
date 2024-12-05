@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string('apellidos');
             $table->string('ci')->nullable();
             $table->string('telefono')->nullable();
+            // Añadir el campo estado
+            $table->boolean('estado')->default(1); // 1 para activo por defecto
             $table->unsignedBigInteger(column: 'usuario_id')->nullable(); // Relación con la tabla roles
-
             $table->foreign('usuario_id')->references('id')->on('usuarios');
 
             $table->timestamps();

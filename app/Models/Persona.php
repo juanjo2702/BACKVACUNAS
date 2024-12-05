@@ -23,8 +23,13 @@ class Persona extends Model
     }
 
     // Definir la relación con Propietario si aplica
-    public function propietario()
+    /* public function propietario()
     {
         return $this->hasOne(Propietario::class);
+    } */
+    public function propietario()
+    {
+        return $this->hasOne(Propietario::class, 'persona_id', 'id');
     }
+    
 }

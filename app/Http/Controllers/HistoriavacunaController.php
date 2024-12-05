@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\HistoriaVacuna;
 use App\Models\Brigada;
 use App\Models\Alcance;
+use App\Models\Campania;
 use App\Models\Participacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log; // Importar el logging de Laravel

@@ -82,6 +82,10 @@ Route::get('/personas/{id}', [PersonaController::class, 'show']);
 Route::put('/jefe-zona/{id}/update', [PersonaController::class, 'updateJefeZona']);
 
 //RECIEN AÑADIDO JUANPA
+
+Route::patch('/zonas/{id}/desactivar', [ZonaController::class, 'desactivar']);
+
+//RECIEN AÑADIDO
 Route::get('/jefe-zona/{id}', [PersonaController::class, 'show']);
 Route::put('/jefe-zona/{id}', [PersonaController::class, 'update']);
 Route::put('/personas/{id}', [PersonaController::class, 'update']);

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('centro'); // Centro de la zona
             $table->string('ciudad')->nullable(); // Ciudad
             $table->string('departamento')->nullable(); // Departamento
+            $table->integer('estado')->default(1); // 1 por defecto para activo
             $table->timestamps(); // Agrega columnas created_at y updated_at
         });
     }

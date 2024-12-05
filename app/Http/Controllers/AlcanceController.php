@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Alcance;
 use App\Models\Usuario;
 use App\Models\Zona;
+use App\Models\Persona;
 use Illuminate\Support\Facades\Log;
 
 class AlcanceController extends Controller
