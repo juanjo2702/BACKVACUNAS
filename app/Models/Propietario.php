@@ -12,7 +12,14 @@ class Propietario extends Model
     protected $fillable = ['direccion', 'observaciones', 'latitud', 'longitud', 'persona_id', 'foto'];
 
     public function persona()
+{
+    return $this->belongsTo(Persona::class, 'persona_id', 'id');
+}
+
+    // Definir la relación con Propietario si aplica
+    // Definir la relación con Mascotas
+    public function mascotas()
     {
-        return $this->belongsTo(Persona::class, 'persona_id');
+        return $this->hasMany(Mascota::class);
     }
 }

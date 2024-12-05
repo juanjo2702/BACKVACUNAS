@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('razas', function (Blueprint $table) {
+        Schema::create('rols', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->integer('tipo');
-            $table->timestamps();
+            $table->string('nombre'); // Esto crea la columna 'id' como clave primaria
+            $table->string('descripcion'); // Columna para la descripción del rol
+            $table->timestamps(); // Esto añadirá las columnas created_at y updated_at
         });
     }
 
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('razas');
+        Schema::dropIfExists('rols');
     }
 };
