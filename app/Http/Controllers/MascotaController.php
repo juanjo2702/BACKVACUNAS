@@ -70,7 +70,7 @@ class MascotaController extends Controller
                 $mascotaData['fotoLateral'] = $lateralPath; // Guardar la ruta de la imagen lateral
             }
 
-            // Crear la mascota con los datos proporcionados
+            // Crear la mascota con los datos proporcionadosssssssssssss
             $mascota = Mascota::create($mascotaData);
 
             return response()->json([
