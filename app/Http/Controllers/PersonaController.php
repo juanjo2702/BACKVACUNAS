@@ -237,20 +237,17 @@ class PersonaController extends Controller
     }
 
     public function buscarPorCI(Request $request)
-    {
-        $ci = $request->input('ci');
-        Log::info('CI recibido: ' . $ci);
+{
+    $ci = $request->input('ci'); // Recuperar el CI desde el cuerpo de la solicitud
+    $persona = DB::table('personas')->where('ci', $ci)->first();
 
-        $persona = DB::table('personas')->where('ci', $ci)->first();
-
-        if ($persona) {
-            Log::info('Persona encontrada: ' . json_encode($persona));
-            return response()->json($persona, 200);
-        }
-
-        Log::warning('Persona no encontrada para CI: ' . $ci);
-        return response()->json(['error' => 'Persona no encontrada'], 404);
+    if ($persona) {
+        return response()->json($persona, 200);
     }
+
+    return response()->json(['error' => 'Persona no encontrada'], 404);
+}
+
     public function updateJefeZona(Request $request, $id)
     {
         $persona = Persona::find($id);

@@ -111,7 +111,4 @@ Route::patch('/mascotas/{id}/desactivar', [MascotaController::class, 'desactivar
 Route::get('/getRazas', [RazaController::class, 'getRazas']);
 Route::put('/mascotas/{id}', [MascotaController::class, 'update']);
 Route::post('/participaciones/registrar', [ParticipacionController::class, 'registrarParticipacion']);
-Route::get('/personas/buscar-por-ci', function (Request $request) {
-    $ci = $request->query('ci');
-    return response()->json(['ci' => $ci], 200);
-});
+Route::post('/personas/buscar-por-ci', [PersonaController::class, 'buscarPorCI']);
