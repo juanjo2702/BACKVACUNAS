@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Propietario;
 use App\Models\Persona;
-use App\Models\Persona;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -70,35 +69,34 @@ class PropietarioController extends Controller
         // Validamos los datos requeridos
         // Validamos los datos requeridos
         $request->validate([
-            'persona_id' => 'required|exists:personas,id',
+            
             'persona_id' => 'required|exists:personas,id',
             'direccion' => 'nullable|string|max:255',
             'observaciones' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg', // Validar el tipo de archivo
+            
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg', // Validar el tipo de archivo
             'latitud' => 'required',
             'longitud' => 'required'
-            'longitud' => 'required'
+
         ]);
 
         // Manejo de la imagen si es que se ha subido
         // Manejo de la imagen si es que se ha subido
         if ($request->hasFile('foto')) {
-            // Guardamos la imagen en la carpeta 'public/images/propietarios'
-            $path = $request->file('foto')->store('images/propietarios', 'public');
+            
             // Guardamos la imagen en la carpeta 'public/images/propietarios'
             $path = $request->file('foto')->store('images/propietarios', 'public');
         } else {
             $path = null; // Si no se subió una foto, establecemos `null`
-            $path = null; // Si no se subió una foto, establecemos `null`
+           
         }
 
-        // Creamos un nuevo registro de Propietario
+
         // Creamos un nuevo registro de Propietario
         $propietario = new Propietario();
         $propietario->direccion = $request->direccion;
         $propietario->observaciones = $request->observaciones;
-        $propietario->foto = $path; // Guardamos la ruta de la imagen
+  
         $propietario->foto = $path; // Guardamos la ruta de la imagen
         $propietario->latitud = $request->latitud;
         $propietario->longitud = $request->longitud;
@@ -111,8 +109,7 @@ class PropietarioController extends Controller
             $propietario->save();
         } catch (\Illuminate\Database\QueryException $e) {
             // Si ocurre un error al guardar, devolvemos un error JSON
-            return response()->json(['error' => 'Error al registrar el propietario.', 'message' => $e->getMessage()], 500);
-            // Si ocurre un error al guardar, devolvemos un error JSON
+            
             return response()->json(['error' => 'Error al registrar el propietario.', 'message' => $e->getMessage()], 500);
         }
 

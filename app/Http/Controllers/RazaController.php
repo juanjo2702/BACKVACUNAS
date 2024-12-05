@@ -6,7 +6,7 @@ use App\Models\Raza;
 use App\Http\Requests\StoreRazaRequest;
 use App\Http\Requests\UpdateRazaRequest;
 use Illuminate\Http\Request;
-use Illuminate\Http\Request;
+
 
 class RazaController extends Controller
 {
