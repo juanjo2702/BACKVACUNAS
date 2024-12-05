@@ -62,13 +62,12 @@ class MiembroController extends Controller
     {
         $persona_id = $request->input('persona_id');
 
-        // Buscar miembro por persona_id
         $miembro = Miembro::where('persona_id', $persona_id)->first();
 
         if ($miembro) {
-            return response()->json($miembro, 200); // Miembro encontrado
+            return response()->json($miembro, 200);
         }
 
-        return response()->json(null, 404); // Miembro no encontrado
+        return response()->json(['message' => 'Miembro no encontrado'], 404);
     }
 }

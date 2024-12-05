@@ -129,6 +129,7 @@ class MascotaController extends Controller
             'raza' => $raza
         ]);
     }
+
     public function obtenerHistorialVacunasPorMascota($mascotaId)
     {
         // Obtener los tres últimos registros de la tabla historiavacunas para la mascota

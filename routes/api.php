@@ -99,12 +99,15 @@ Route::get('/storage/{path}', function ($path) {
 
 Route::put('/propietarios/{id}', [PropietarioController::class, 'update']);
 
-Route::get('/personas/buscar-por-ci', [PersonaController::class, 'buscarPorCI']); // Busca por CI
 Route::get('/miembros', [MiembroController::class, 'getByPersonaId']);
 Route::get('/participacions', [ParticipacionController::class, 'checkParticipacion']);
 Route::get('/participaciones/brigada/{brigadaId}', [ParticipacionController::class, 'getParticipacionesByBrigada']);
-
 Route::get('/personas?filter=withUsuario', action: [PersonaController::class, 'indexWithUsuario']);
 Route::patch('/mascotas/{id}/desactivar', [MascotaController::class, 'desactivar']);
 Route::get('/getRazas', [RazaController::class, 'getRazas']);
 Route::put('/mascotas/{id}', [MascotaController::class, 'update']);
+Route::post('/participaciones/registrar', [ParticipacionController::class, 'registrarParticipacion']);
+Route::get('/personas/buscar-por-ci', function (Request $request) {
+    $ci = $request->query('ci');
+    return response()->json(['ci' => $ci], 200);
+});

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Participacion;
+use App\Models\Persona;
+use App\Models\Miembro;
 use Illuminate\Http\Request;
 
 class ParticipacionController extends Controller
@@ -47,5 +49,33 @@ class ParticipacionController extends Controller
             ->get();
 
         return response()->json($participaciones);
+    }
+    public function registrarParticipacion(Request $request)
+    {
+        $request->validate([
+            'ci' => 'required|string',
+        ]);
+
+        // Buscar la persona por CI
+        $persona = Persona::where('ci', $request->ci)->first();
+
+        if (!$persona) {
+            return response()->json(['error' => 'Persona no encontrada'], 404);
+        }
+
+        // Verificar si la persona es un miembro
+        $miembro = Miembro::where('persona_id', $persona->id)->first();
+
+        if (!$miembro) {
+            return response()->json(['error' => 'La persona no es un miembro'], 404);
+        }
+
+        // Registrar la participación
+        $participacion = Participacion::create([
+            'miembro_id' => $miembro->id,
+            'brigada_id' => $request->brigada_id,
+        ]);
+
+        return response()->json(['message' => 'Participación registrada con éxito', 'participacion' => $participacion]);
     }
 }

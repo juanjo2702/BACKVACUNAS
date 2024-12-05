@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
+
 class PersonaController extends Controller
 {
     // Método para listar personas
@@ -229,25 +230,18 @@ class PersonaController extends Controller
 
     public function buscarPorCI(Request $request)
     {
-        Log::info('CI recibido para buscar:', ['ci' => $request->input('ci')]);
-
-        $request->validate([
-            'ci' => 'required|string|max:20'
-        ]);
-
         $ci = $request->input('ci');
+        Log::info('CI recibido: ' . $ci);
 
-        Log::info('Ejecutando consulta con CI:', ['ci' => $ci]);
-
-        $persona = Persona::where('ci', $ci)->first();
+        $persona = DB::table('personas')->where('ci', $ci)->first();
 
         if ($persona) {
-            Log::info('Persona encontrada:', $persona->toArray());
+            Log::info('Persona encontrada: ' . json_encode($persona));
             return response()->json($persona, 200);
         }
 
-        Log::warning('Persona no encontrada para CI:', ['ci' => $ci]);
-        return response()->json(['message' => 'Persona no encontrada'], 404);
+        Log::warning('Persona no encontrada para CI: ' . $ci);
+        return response()->json(['error' => 'Persona no encontrada'], 404);
     }
     public function updateJefeZona(Request $request, $id)
     {
