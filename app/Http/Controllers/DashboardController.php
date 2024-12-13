@@ -8,7 +8,7 @@ use App\Models\Raza;
 use App\Models\Brigada;
 use App\Models\Propietario;
 use App\Models\Campania;
-use App\Models\HistoriaVacuna;
+use App\Models\Historiavacuna;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller

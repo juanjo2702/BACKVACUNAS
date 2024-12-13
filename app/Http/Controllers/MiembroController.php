@@ -19,8 +19,8 @@ class MiembroController extends Controller
         // Validación de los datos
         $request->validate([
             'persona_id' => 'required|exists:personas,id', // Verificar que el persona_id exista
-            'fotoAnverso' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validar foto anverso
-            'fotoReverso' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validar foto reverso
+            'fotoAnverso' => 'nullable|image|mimes:jpeg,png,jpg', // Validar foto anverso
+            'fotoReverso' => 'nullable|image|mimes:jpeg,png,jpg', // Validar foto reverso
         ]);
 
         try {

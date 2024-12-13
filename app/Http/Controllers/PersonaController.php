@@ -44,8 +44,6 @@ class PersonaController extends Controller
                 'apellidos' => 'required|string|max:255',
                 'ci' => 'nullable|string|max:20|unique:personas,ci', // validamos para que el campo sea único en la tabla
                 'telefono' => 'nullable|string|max:20',
-                'usuario_id' => 'nullable|exists:usuarios,id', // Validamos si se envía usuario_id y que exista en la tabla usuarios
-                'telefono' => 'nullable|string|max:20',
                 'usuario_id' => 'nullable|exists:usuarios,id' // Validamos si se envía usuario_id y que exista en la tabla usuarios
             ]);
 

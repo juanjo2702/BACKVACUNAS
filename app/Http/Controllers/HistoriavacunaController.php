@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\HistoriaVacuna;
+use App\Models\Historiavacuna;
 use App\Models\Brigada;
 use App\Models\Alcance;
 use App\Models\Campania;
@@ -91,6 +91,7 @@ class HistoriavacunaController extends Controller
         }
     }
 
+
     public function getHistorialPorMascota($mascotaId)
     {
         try {
@@ -113,4 +114,12 @@ class HistoriavacunaController extends Controller
             return response()->json(['error' => 'No se pudo obtener el historial de vacunación.'], 500);
         }
     }
+    
+    
+            public function index()
+    {
+        // Si necesitas devolver un listado de datos, ajusta este método
+        return response()->json(['message' => 'Historial de vacunas listado correctamente']);
+    }
+    
 }
