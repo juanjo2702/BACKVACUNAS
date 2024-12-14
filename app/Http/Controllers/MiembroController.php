@@ -19,8 +19,8 @@ class MiembroController extends Controller
         // Validación de los datos
         $request->validate([
             'persona_id' => 'required|exists:personas,id', // Verificar que el persona_id exista
-            'fotoAnverso' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validar foto anverso
-            'fotoReverso' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validar foto reverso
+            'fotoAnverso' => 'nullable|image|mimes:jpeg,png,jpg', // Validar foto anverso
+            'fotoReverso' => 'nullable|image|mimes:jpeg,png,jpg', // Validar foto reverso
         ]);
 
         try {
@@ -62,17 +62,17 @@ class MiembroController extends Controller
     public function getByPersonaId(Request $request)
     {
         $persona_id = $request->input('persona_id');
-    
+
         // Buscar miembro por persona_id
         $miembro = Miembro::where('persona_id', $persona_id)->first();
-    
+
         if ($miembro) {
             return response()->json($miembro, 200); // Miembro encontrado
         }
-    
+
         return response()->json(null, 404); // Miembro no encontrado
     }
-    
+
 
 
 }

@@ -8,8 +8,7 @@ use App\Models\Alcance;
 use App\Models\Campania;
 use App\Models\Participacion;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log; // Importar el logging de Laravel
-
+use Illuminate\Support\Facades\Log;
 class HistoriavacunaController extends Controller
 {
     public function store(Request $request)
@@ -74,7 +73,7 @@ class HistoriavacunaController extends Controller
             ]);
 
             // Crear el registro en la tabla `historiavacunas`
-            Historiavacuna::create([
+            HistoriaVacuna::create([
                 'estado' => $request->estado, // 1 para vacunado, 0 para no vacunado
                 'motivo' => $request->estado == 0 ? $request->motivo : null, // Solo si no está vacunado
                 'mascota_id' => $request->mascota_id,

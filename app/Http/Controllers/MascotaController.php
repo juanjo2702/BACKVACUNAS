@@ -268,5 +268,5 @@ class MascotaController extends Controller
     }
 } */
 
-    
+
 

@@ -45,8 +45,6 @@ class PersonaController extends Controller
                 'ci' => 'nullable|string|max:20|unique:personas,ci', // validamos para que el campo sea único en la tabla
                 'telefono' => 'nullable|string|max:20',
                 'usuario_id' => 'nullable|exists:usuarios,id', // Validamos si se envía usuario_id y que exista en la tabla usuarios
-                'telefono' => 'nullable|string|max:20',
-                'usuario_id' => 'nullable|exists:usuarios,id' // Validamos si se envía usuario_id y que exista en la tabla usuarios
             ]);
 
             // Creación de la nueva persona
@@ -61,7 +59,6 @@ class PersonaController extends Controller
 
             $persona->save();
 
-            return response()->json(['message' => 'Persona registrada correctamente', 'persona' => $persona, 'id' => $persona->id], 201); // Código 201 Creado
             return response()->json(['message' => 'Persona registrada correctamente', 'persona' => $persona, 'id' => $persona->id], 201); // Código 201 Creado
         } catch (ValidationException $e) {
             // Capturamos errores de validación
