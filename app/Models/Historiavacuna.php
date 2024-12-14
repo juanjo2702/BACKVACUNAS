@@ -16,6 +16,7 @@ class Historiavacuna extends Model
     protected $fillable = [
         'estado',           // Estado de vacunación (1 para vacunado, 0 para no vacunado)
         'motivo',           // Motivo de no vacunación (nullable)
+        'descripcion',
         'mascota_id',       // ID de la mascota
         'participacion_id', // ID de la participación del miembro en la brigada
         'alcance_id'        // ID del alcance asociado a la zona de la brigada

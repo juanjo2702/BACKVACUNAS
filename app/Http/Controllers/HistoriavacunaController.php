@@ -22,6 +22,7 @@ class HistoriavacunaController extends Controller
             $request->validate([
                 'estado' => 'required|integer',
                 'motivo' => 'nullable|integer', // Solo si es no vacunado
+                'descripcion' => 'nullable|string|required_if:motivo,3', // Requerido solo si el motivo es "Otro" (3)
                 'mascota_id' => 'required|exists:mascotas,id',
                 'miembro_id' => 'required|exists:miembros,id',
                 'brigada_id' => 'required|exists:brigadas,id' // Validamos que brigada_id esté presente y exista
@@ -68,6 +69,7 @@ class HistoriavacunaController extends Controller
             Log::info('Creando el registro en la tabla historiavacunas con los siguientes datos:', [
                 'estado' => $request->estado,
                 'motivo' => $request->motivo,
+                'descripcion' => $request->descripcion,
                 'mascota_id' => $request->mascota_id,
                 'participacion_id' => $participacion->id,
                 'alcance_id' => $alcance->id
@@ -77,12 +79,19 @@ class HistoriavacunaController extends Controller
             Historiavacuna::create([
                 'estado' => $request->estado, // 1 para vacunado, 0 para no vacunado
                 'motivo' => $request->estado == 0 ? $request->motivo : null, // Solo si no está vacunado
+                'descripcion' => $request->motivo == 3 ? $request->descripcion : null, // Guardar descripción solo si el motivo es 3
                 'mascota_id' => $request->mascota_id,
                 'participacion_id' => $participacion->id,
                 'alcance_id' => $alcance->id // Usar el alcance correcto
             ]);
 
-            Log::info('Historial de vacunación guardado correctamente.');
+            Log::info('Registro creado en historiavacunas:', [
+                'estado' => $request->estado,
+                'motivo' => $request->motivo,
+                'descripcion' => $request->descripcion,
+                'mascota_id' => $request->mascota_id
+            ]);
+            
             return response()->json(['message' => 'Historial de vacunación guardado correctamente.'], 200);
         } catch (\Exception $e) {
             // Log para capturar cualquier error
@@ -101,6 +110,7 @@ class HistoriavacunaController extends Controller
                 ->select(
                     'historiavacunas.estado',
                     'historiavacunas.motivo',
+                    'historiavacunas.descripcion',
                     'historiavacunas.created_at',
                     'campanias.nombre as campania_nombre'
                 )
