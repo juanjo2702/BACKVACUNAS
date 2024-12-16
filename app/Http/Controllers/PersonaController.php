@@ -54,12 +54,8 @@ class PersonaController extends Controller
             $persona->ci = $validated['ci'] ?? null; // Si 'ci' no es enviado, lo asignamos como null
             $persona->telefono = $validated['telefono'] ?? null; // Lo mismo con 'telefono'
             $persona->usuario_id = $validated['usuario_id'] ?? null; // Asignar el usuario_id si se envía
-
-            $persona->usuario_id = $validated['usuario_id'] ?? null; // Asignar el usuario_id si se envía
-
             $persona->save();
 
-            return response()->json(['message' => 'Persona registrada correctamente', 'persona' => $persona, 'id' => $persona->id], 201); // Código 201 Creado
             return response()->json(['message' => 'Persona registrada correctamente', 'persona' => $persona, 'id' => $persona->id], 201); // Código 201 Creado
         } catch (ValidationException $e) {
             // Capturamos errores de validación

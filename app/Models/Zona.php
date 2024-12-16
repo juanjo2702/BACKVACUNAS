@@ -35,4 +35,8 @@ class Zona extends Model
     {
         return $this->belongsTo(Campania::class, 'campania_id');
     }
+    public function municipio()
+    {
+        return $this->belongsTo(Municipio::class);
+    }
 }

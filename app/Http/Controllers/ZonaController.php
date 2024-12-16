@@ -62,13 +62,49 @@ class ZonaController extends Controller
     {
         try {
             $centros = Zona::select('id', 'centro')
-                ->distinct('centro')
+                ->distinct()
                 ->get();
+
+            if ($centros->isEmpty()) {
+                return response()->json(['message' => 'No hay centros disponibles'], 404);
+            }
 
             return response()->json($centros, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+
+    public function getZonaDetalles($id)
+    {
+        $zona = Zona::with(['municipio.red.departamento'])
+            ->where('id', $id)
+            ->first();
+
+        if (!$zona) {
+            return response()->json(['message' => 'Zona no encontrada'], 404);
+        }
+
+        return response()->json([
+            'centro' => $zona->centro,
+            'municipio' => $zona->municipio->nombre,
+            'red' => $zona->municipio->red->nombre,
+            'departamento' => $zona->municipio->red->departamento->nombre,
+        ]);
+    }
+
+    public function getByMunicipio(Request $request)
+    {
+        $municipioId = $request->query('municipio_id');
+
+        if (!$municipioId) {
+            return response()->json(['message' => 'El municipio_id es obligatorio'], 400);
+        }
+
+        $zonas = Zona::where('municipio_id', $municipioId)->get(['id', 'centro']);
+
+        return response()->json($zonas, 200);
     }
     /* public function desactivar($id)
     {
@@ -82,6 +118,13 @@ class ZonaController extends Controller
             return response()->json(['message' => 'Error al desactivar la zona.', 'error' => $e->getMessage()], 500);
         }
     } */
-
-
+    public function show($id)
+    {
+        try {
+            $zona = Zona::findOrFail($id); // Busca la zona por ID
+            return response()->json($zona, 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Zona no encontrada'], 404);
+        }
+    }
 }
