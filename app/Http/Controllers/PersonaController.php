@@ -79,17 +79,11 @@ class PersonaController extends Controller
     }
     public function getByUsuarioId($usuario_id)
     {
-        // Verifica si el método se está llamando correctamente
-        Log::info('Buscando persona para usuario_id: ' . $usuario_id);
-
         $persona = Persona::where('usuario_id', $usuario_id)->first();
 
         if (!$persona) {
-            Log::error('Persona no encontrada para usuario_id: ' . $usuario_id);
             return response()->json(['error' => 'Persona no encontrada'], 404);
         }
-
-        Log::info('Persona encontrada: ' . json_encode($persona));
         return response()->json($persona);
     }
 

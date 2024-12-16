@@ -15,9 +15,6 @@ class HistoriavacunaController extends Controller
     public function store(Request $request)
     {
         try {
-            // Log para verificar que los datos están llegando correctamente
-            Log::info('Datos recibidos en el controlador Historiavacuna:', $request->all());
-
             // Validación de los datos del request
             $request->validate([
                 'estado' => 'required|integer',
@@ -29,13 +26,11 @@ class HistoriavacunaController extends Controller
             ]);
 
             // Obtener la última participación correspondiente al miembro
-            Log::info('Buscando la última participación del miembro con ID: ' . $request->miembro_id);
             $participacion = Participacion::where('miembro_id', $request->miembro_id)
                 ->latest('created_at')
                 ->first();
 
             if (!$participacion) {
-                Log::error('Participación no encontrada para el miembro con ID: ' . $request->miembro_id);
                 return response()->json(['error' => 'No se encontró la participación del miembro.'], 404);
             }
 
@@ -47,21 +42,16 @@ class HistoriavacunaController extends Controller
                 // Obtener la zona_id y campania_id de la brigada
                 $zonaId = $brigada->zona_id;
                 $campaniaId = $brigada->campania_id;
-                Log::info('Zona ID obtenida de la brigada: ' . $zonaId);
-                Log::info('Campaña ID obtenida de la brigada: ' . $campaniaId);
 
                 // Buscar el alcance donde coincidan zona_id y campania_id
-                Log::info('Buscando el alcance para zona ID y campaña ID.');
                 $alcance = Alcance::where('zona_id', $zonaId)
                     ->where('campania_id', $campaniaId)
                     ->first();
 
                 if (!$alcance) {
-                    Log::error('No se encontró el alcance para la zona y campaña especificadas.');
                     return response()->json(['error' => 'No se encontró el alcance para la zona y campaña especificadas.'], 404);
                 }
             } else {
-                Log::error('No se encontró la brigada con ID: ' . $request->brigada_id);
                 return response()->json(['error' => 'No se encontró la brigada.'], 404);
             }
 
@@ -91,11 +81,10 @@ class HistoriavacunaController extends Controller
                 'descripcion' => $request->descripcion,
                 'mascota_id' => $request->mascota_id
             ]);
-            
+
             return response()->json(['message' => 'Historial de vacunación guardado correctamente.'], 200);
         } catch (\Exception $e) {
             // Log para capturar cualquier error
-            Log::error('Error al guardar el historial de vacunación: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -124,12 +113,12 @@ class HistoriavacunaController extends Controller
             return response()->json(['error' => 'No se pudo obtener el historial de vacunación.'], 500);
         }
     }
-    
-    
+
+
             public function index()
     {
         // Si necesitas devolver un listado de datos, ajusta este método
         return response()->json(['message' => 'Historial de vacunas listado correctamente']);
     }
-    
+
 }

@@ -67,8 +67,6 @@ class BrigadaController extends Controller
 
     public function generarBrigadas(Request $request)
     {
-        Log::info('Datos recibidos en generarBrigadas:', $request->all());
-
         $request->validate([
             'zona_id' => 'required|exists:zonas,id',
             'campania_id' => 'required|exists:campanias,id',
