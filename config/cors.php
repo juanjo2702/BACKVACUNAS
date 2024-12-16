@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://frontvacunas.xpertiabo.com'], // Especifica el origen de tu frontend
+    'allowed_origins' => ['https://frontvacunas.xpertiabo.com', '*'], // Especifica el origen de tu frontend
 
     'allowed_origins_patterns' => [],
 

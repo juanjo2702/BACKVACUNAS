@@ -14,6 +14,9 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ZonaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepartamentoController;
+use App\Http\Controllers\RedController;
+use App\Http\Controllers\MunicipioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +34,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('/zonas/centros', [ZonaController::class, 'getCentros']);
 Route::post('/login', [UsuarioController::class, 'login']);
 Route::apiResource('/personas', PersonaController::class);
 Route::apiResource('/propietarios', PropietarioController::class);
@@ -74,7 +78,6 @@ Route::get('/campanias/{id}/brigadas', [CampaniaController::class, 'getBrigadasB
 Route::get('/alcances/{campaniaId}/zonas', [AlcanceController::class, 'getZonasByCampania']);
 Route::get('/alcances/campania/{campaniaId}', [AlcanceController::class, 'getZonasByCampania']);
 Route::get('/mascota/{mascotaId}/historial-vacunas', [HistoriavacunaController::class, 'getHistorialPorMascota']);
-Route::get('/zonas/centros', [ZonaController::class, 'getCentros']);
 Route::post('/brigadas/generar', [BrigadaController::class, 'generarBrigadas']);
 Route::get('/usuarios-filtro', [UsuarioController::class, 'filtrarPorRolEstado']);
 Route::get('/personas/{id}', [PersonaController::class, 'show']);
@@ -111,3 +114,11 @@ Route::get('/getRazas', [RazaController::class, 'getRazas']);
 Route::put('/mascotas/{id}', [MascotaController::class, 'update']);
 Route::post('/participaciones/registrar', [ParticipacionController::class, 'registrarParticipacion']);
 Route::post('/personas/buscar-por-ci', [PersonaController::class, 'buscarPorCI']);
+
+Route::get('/zonas/{id}/detalles', [ZonaController::class, 'getZonaDetalles']);
+
+// Rutas para cargar datos dinámicos
+Route::get('/departamentos', [DepartamentoController::class, 'index']);
+Route::get('/redes', [RedController::class, 'getByDepartamento']);
+Route::get('/municipios', [MunicipioController::class, 'getByRed']);
+Route::get('/zonas',[ZonaController::class, 'getByMunicipio']);
