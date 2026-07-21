@@ -200,11 +200,9 @@ class PersonaController extends Controller
 
     public function obtenerPersonasConPropietario(Request $request)
     {
-        $personas = Persona::where('estado', 1) // Filtra solo personas con estado 1
-            ->with('propietario') // Incluye los datos del propietario
+        $personas = Persona::where('estado', 1)
+            ->with('propietario')
             ->get();
-        // Obtiene las personas junto con los datos del propietario asociado
-        $personas = Persona::with('propietario')->get();
 
         // Formateamos los datos para incluir persona_id dentro del objeto de propietario
         $result = $personas->map(function ($persona) {
