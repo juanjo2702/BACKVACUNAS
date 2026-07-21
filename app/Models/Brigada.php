@@ -33,4 +33,20 @@ class Brigada extends Model
     {
         return $this->belongsTo(Campania::class, 'campania_id');
     }
+
+    public function miembros()
+    {
+        return $this->belongsToMany(Miembro::class, 'participacions', 'brigada_id', 'miembro_id')
+            ->with('persona'); // Incluye persona por conveniencia
+    }
+
+    public function zonas()
+    {
+        return $this->belongsTo(Zona::class);
+    }
+
+    public function usuarios()
+    {
+        return $this->belongsTo(Usuario::class);
+    }
 }

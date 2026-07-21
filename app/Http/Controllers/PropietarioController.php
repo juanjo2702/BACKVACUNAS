@@ -69,11 +69,11 @@ class PropietarioController extends Controller
         // Validamos los datos requeridos
         // Validamos los datos requeridos
         $request->validate([
-            
+
             'persona_id' => 'required|exists:personas,id',
             'direccion' => 'nullable|string|max:255',
             'observaciones' => 'nullable|string',
-            
+
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg', // Validar el tipo de archivo
             'latitud' => 'required',
             'longitud' => 'required'
@@ -83,12 +83,12 @@ class PropietarioController extends Controller
         // Manejo de la imagen si es que se ha subido
         // Manejo de la imagen si es que se ha subido
         if ($request->hasFile('foto')) {
-            
+
             // Guardamos la imagen en la carpeta 'public/images/propietarios'
             $path = $request->file('foto')->store('images/propietarios', 'public');
         } else {
             $path = null; // Si no se subió una foto, establecemos `null`
-           
+
         }
 
 
@@ -96,7 +96,7 @@ class PropietarioController extends Controller
         $propietario = new Propietario();
         $propietario->direccion = $request->direccion;
         $propietario->observaciones = $request->observaciones;
-  
+
         $propietario->foto = $path; // Guardamos la ruta de la imagen
         $propietario->latitud = $request->latitud;
         $propietario->longitud = $request->longitud;
@@ -109,7 +109,7 @@ class PropietarioController extends Controller
             $propietario->save();
         } catch (\Illuminate\Database\QueryException $e) {
             // Si ocurre un error al guardar, devolvemos un error JSON
-            
+
             return response()->json(['error' => 'Error al registrar el propietario.', 'message' => $e->getMessage()], 500);
         }
 
@@ -274,5 +274,29 @@ class PropietarioController extends Controller
             ->get();
 
         return response()->json($personas);
+    }
+
+    // PropietarioController.php
+    // App\Http\Controllers\PropietarioController.php
+    public function propietariosConMascotasNoVacunadas()
+    {
+        try {
+            $propietarios = Propietario::whereHas('mascotas', function ($query) {
+                $query->whereDoesntHave('historiavacunas');
+            })
+                ->with([
+                    'persona:id,nombres,apellidos',
+                    'mascotas' => function ($query) {
+                        $query->whereDoesntHave('historiavacunas')
+                            ->select('id', 'nombre', 'especie', 'propietario_id'); // asegurate que tenga especie
+                    }
+                ])
+                ->get();
+
+            return response()->json($propietarios);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener propietarios no vacunados: ' . $e->getMessage());
+            return response()->json(['error' => 'Error interno del servidor'], 500);
+        }
     }
 }

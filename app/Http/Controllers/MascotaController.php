@@ -11,6 +11,8 @@ use App\Models\Alcance;
 use App\Models\Campania;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class MascotaController extends Controller
@@ -241,6 +243,73 @@ class MascotaController extends Controller
         }
     }
 
+    public function mascotasCercanas(Request $request)
+    {
+        try {
+            $lat = $request->input('latitud');
+            $lng = $request->input('longitud');
+            $radio_km = max((float)$request->input('radio', 1), 1); // mínimo 1 km
+
+            $especie = $request->input('especie');
+            $raza = $request->input('raza');
+            $genero = $request->input('genero');
+
+            $query = DB::table('mascotas')
+                ->join('propietarios', 'mascotas.propietario_id', '=', 'propietarios.id')
+                ->join('personas', 'propietarios.persona_id', '=', 'personas.id')
+                ->leftJoin('razas', 'razas.id', '=', 'mascotas.raza_id')
+                ->leftJoin('historiavacunas', 'historiavacunas.mascota_id', '=', 'mascotas.id')
+                ->leftJoin('alcances', 'alcances.id', '=', 'historiavacunas.alcance_id')
+                ->leftJoin('campanias', 'campanias.id', '=', 'alcances.campania_id')
+                ->select(
+                    'mascotas.id',
+                    'mascotas.nombre as nombre_mascota',
+                    'mascotas.fotoFrontal',
+                    'razas.nombre as raza',
+                    'mascotas.especie',
+                    'mascotas.genero',
+                    'personas.nombres',
+                    'personas.apellidos',
+                    'personas.telefono',
+                    DB::raw('IF(campanias.id IS NOT NULL, "Vacunado", "No vacunado") as estado_vacunacion'),
+                    'propietarios.latitud',
+                    'propietarios.longitud'
+                )
+                ->whereRaw("ST_Distance_Sphere(POINT(?, ?), POINT(propietarios.longitud, propietarios.latitud)) <= ?", [
+                    $lng,
+                    $lat,
+                    $radio_km * 1000
+                ])
+                ->where(function ($query) {
+                    $query->whereNull('campanias.id')
+                        ->orWhere('campanias.id', function ($subquery) {
+                            $subquery->select('id')
+                                ->from('campanias')
+                                ->orderByDesc('fechaFinal')
+                                ->limit(1);
+                        });
+                });
+
+            // Filtros dinámicos
+            if (!empty($especie)) {
+                $query->where('mascotas.especie', $especie);
+            }
+
+            if (!empty($raza)) {
+                $query->where('razas.nombre', $raza); // ahora se filtra por nombre de raza
+            }
+
+            if (!empty($genero)) {
+                $query->where('mascotas.genero', $genero);
+            }
+
+            $resultados = $query->get();
+            return response()->json($resultados);
+        } catch (\Throwable $e) {
+            Log::error('Error en búsqueda geográfica: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }
 
 
@@ -267,6 +336,3 @@ class MascotaController extends Controller
         ], 500);
     }
 } */
-
-
-

@@ -51,4 +51,9 @@ class Mascota extends Model
     {
         return $value ? Storage::url($value) : null;
     }
+
+    public function historiavacunas()
+    {
+        return $this->hasMany(Historiavacuna::class);
+    }
 }

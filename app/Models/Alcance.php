@@ -28,4 +28,9 @@ class Alcance extends Model
     {
         return $this->belongsTo(Persona::class, 'persona_id');
     }
+
+    public function miembros()
+    {
+        return $this->hasMany(Miembro::class);
+    }
 }

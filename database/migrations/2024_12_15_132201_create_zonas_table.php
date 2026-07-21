@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('zonas', function (Blueprint $table) {
             $table->id(); // Clave primaria
-            $table->string('nombre'); // Nombre de la zona
             $table->string('centro'); // Centro de la zona
-            $table->string('ciudad')->nullable(); // Ciudad
-            $table->string('departamento')->nullable(); // Departamento
+            $table->integer('cobertura')->nullable()->default(0);
+            $table->unsignedBigInteger('municipio_id');
+            $table->foreign('municipio_id')->references('id')->on('municipios')->onDelete('cascade');
             $table->integer('estado')->default(1); // 1 por defecto para activo
             $table->timestamps(); // Agrega columnas created_at y updated_at
         });

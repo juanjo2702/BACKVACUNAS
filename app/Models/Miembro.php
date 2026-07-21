@@ -31,4 +31,8 @@ class Miembro extends Model
         return $this->hasMany(Participacion::class);
     }
 
+    public function brigadas()
+    {
+        return $this->belongsToMany(Brigada::class, 'participacions', 'miembro_id', 'brigada_id');
+    }
 }

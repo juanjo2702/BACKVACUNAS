@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\HistoriaVacuna;
+use App\Models\Historiavacuna;
 use App\Models\Brigada;
 use App\Models\Alcance;
 use App\Models\Campania;
@@ -14,26 +14,22 @@ class HistoriavacunaController extends Controller
     public function store(Request $request)
     {
         try {
-            // Log para verificar que los datos están llegando correctamente
-            Log::info('Datos recibidos en el controlador Historiavacuna:', $request->all());
-
             // Validación de los datos del request
             $request->validate([
                 'estado' => 'required|integer',
                 'motivo' => 'nullable|integer', // Solo si es no vacunado
+                'descripcion' => 'nullable|string|required_if:motivo,3', // Requerido solo si el motivo es "Otro" (3)
                 'mascota_id' => 'required|exists:mascotas,id',
                 'miembro_id' => 'required|exists:miembros,id',
                 'brigada_id' => 'required|exists:brigadas,id' // Validamos que brigada_id esté presente y exista
             ]);
 
             // Obtener la última participación correspondiente al miembro
-            Log::info('Buscando la última participación del miembro con ID: ' . $request->miembro_id);
             $participacion = Participacion::where('miembro_id', $request->miembro_id)
                 ->latest('created_at')
                 ->first();
 
             if (!$participacion) {
-                Log::error('Participación no encontrada para el miembro con ID: ' . $request->miembro_id);
                 return response()->json(['error' => 'No se encontró la participación del miembro.'], 404);
             }
 
@@ -45,21 +41,16 @@ class HistoriavacunaController extends Controller
                 // Obtener la zona_id y campania_id de la brigada
                 $zonaId = $brigada->zona_id;
                 $campaniaId = $brigada->campania_id;
-                Log::info('Zona ID obtenida de la brigada: ' . $zonaId);
-                Log::info('Campaña ID obtenida de la brigada: ' . $campaniaId);
 
                 // Buscar el alcance donde coincidan zona_id y campania_id
-                Log::info('Buscando el alcance para zona ID y campaña ID.');
                 $alcance = Alcance::where('zona_id', $zonaId)
                     ->where('campania_id', $campaniaId)
                     ->first();
 
                 if (!$alcance) {
-                    Log::error('No se encontró el alcance para la zona y campaña especificadas.');
                     return response()->json(['error' => 'No se encontró el alcance para la zona y campaña especificadas.'], 404);
                 }
             } else {
-                Log::error('No se encontró la brigada con ID: ' . $request->brigada_id);
                 return response()->json(['error' => 'No se encontró la brigada.'], 404);
             }
 
@@ -67,6 +58,7 @@ class HistoriavacunaController extends Controller
             Log::info('Creando el registro en la tabla historiavacunas con los siguientes datos:', [
                 'estado' => $request->estado,
                 'motivo' => $request->motivo,
+                'descripcion' => $request->descripcion,
                 'mascota_id' => $request->mascota_id,
                 'participacion_id' => $participacion->id,
                 'alcance_id' => $alcance->id
@@ -76,19 +68,26 @@ class HistoriavacunaController extends Controller
             HistoriaVacuna::create([
                 'estado' => $request->estado, // 1 para vacunado, 0 para no vacunado
                 'motivo' => $request->estado == 0 ? $request->motivo : null, // Solo si no está vacunado
+                'descripcion' => $request->motivo == 3 ? $request->descripcion : null, // Guardar descripción solo si el motivo es 3
                 'mascota_id' => $request->mascota_id,
                 'participacion_id' => $participacion->id,
                 'alcance_id' => $alcance->id // Usar el alcance correcto
             ]);
 
-            Log::info('Historial de vacunación guardado correctamente.');
+            Log::info('Registro creado en historiavacunas:', [
+                'estado' => $request->estado,
+                'motivo' => $request->motivo,
+                'descripcion' => $request->descripcion,
+                'mascota_id' => $request->mascota_id
+            ]);
+
             return response()->json(['message' => 'Historial de vacunación guardado correctamente.'], 200);
         } catch (\Exception $e) {
             // Log para capturar cualquier error
-            Log::error('Error al guardar el historial de vacunación: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
     public function getHistorialPorMascota($mascotaId)
     {
@@ -99,6 +98,7 @@ class HistoriavacunaController extends Controller
                 ->select(
                     'historiavacunas.estado',
                     'historiavacunas.motivo',
+                    'historiavacunas.descripcion',
                     'historiavacunas.created_at',
                     'campanias.nombre as campania_nombre'
                 )
@@ -112,4 +112,12 @@ class HistoriavacunaController extends Controller
             return response()->json(['error' => 'No se pudo obtener el historial de vacunación.'], 500);
         }
     }
+
+
+            public function index()
+    {
+        // Si necesitas devolver un listado de datos, ajusta este método
+        return response()->json(['message' => 'Historial de vacunas listado correctamente']);
+    }
+
 }

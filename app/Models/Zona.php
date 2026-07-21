@@ -9,24 +9,28 @@ class Zona extends Model
 {
     use HasFactory;
 
-    // Definir la tabla correspondiente en la base de datos (opcional si sigue las convenciones de Laravel)
     protected $table = 'zonas';
 
-    // Definir los campos que pueden ser rellenados en masa (mass-assignment)
     protected $fillable = [
-        'nombre',
         'centro',
-        'ciudad',
-        'departamento',
+        'cobertura',
+        'municipio_id',
         'estado'
     ];
 
+    // Relación: una zona puede tener muchas brigadas
     public function brigadas()
     {
         return $this->hasMany(Brigada::class);
     }
 
-    // Relación con alcances
+    // Relación con municipio (si existe)
+    public function municipio()
+    {
+        return $this->belongsTo(Municipio::class);
+    }
+
+    // Relación con alcance (si la usas en otro contexto)
     public function alcances()
     {
         return $this->hasMany(Alcance::class);

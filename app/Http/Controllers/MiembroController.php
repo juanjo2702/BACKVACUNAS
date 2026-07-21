@@ -27,13 +27,11 @@ class MiembroController extends Controller
             // Manejar la subida de la imagen del anverso
             if ($request->hasFile('fotoAnverso')) {
                 $anversoPath = $request->file('fotoAnverso')->store('images/miembros', 'public');
-                Log::info('Anverso del CI subido:', ['path' => $anversoPath]);
             }
 
             // Manejar la subida de la imagen del reverso
             if ($request->hasFile('fotoReverso')) {
                 $reversoPath = $request->file('fotoReverso')->store('images/miembros', 'public');
-                Log::info('Reverso del CI subido:', ['path' => $reversoPath]);
             }
 
             // Crear un nuevo miembro
@@ -50,7 +48,6 @@ class MiembroController extends Controller
                 'miembro' => $miembro
             ], 201);
         } catch (\Exception $e) {
-            Log::error('Error al registrar el miembro:', ['error' => $e->getMessage()]);
             return response()->json([
                 'error' => 'Error al registrar el miembro',
                 'message' => $e->getMessage(),

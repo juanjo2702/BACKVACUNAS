@@ -8,7 +8,7 @@ use App\Models\Raza;
 use App\Models\Brigada;
 use App\Models\Propietario;
 use App\Models\Campania;
-use App\Models\HistoriaVacuna;
+use App\Models\Historiavacuna;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -51,10 +51,10 @@ class DashboardController extends Controller
                 ->pluck('count', 'raza');
 
             // 9. Brigadas Asignadas por Zona (relacionamos `brigadas` con `zonas`)
-            $brigadasPorZona = Brigada::join('zonas', 'brigadas.zona_id', '=', 'zonas.id')
+           /* $brigadasPorZona = Brigada::join('zonas', 'brigadas.zona_id', '=', 'zonas.id')
             ->select('zonas.nombre as zona', DB::raw('count(brigadas.id) as count'))
             ->groupBy('zonas.nombre')
-            ->pluck('count', 'zona');
+            ->pluck('count', 'zona');*/
 
 
             // 10. Relación entre Mascotas y Propietarios (gráfico de barras)
@@ -111,7 +111,7 @@ class DashboardController extends Controller
                 'mascotasPorEspecie' => $mascotasPorEspecie ?? [],
                 'perrosPorRaza' => $perrosPorRaza ?? [],
                 'gatosPorRaza' => $gatosPorRaza ?? [],
-                'brigadasPorZona' => $brigadasPorZona ?? [],
+                /*'brigadasPorZona' => $brigadasPorZona ?? [],*/
                 'mascotasRegistradas' => $mascotasRegistradas ?? 0,
                 'propietariosRegistrados' => $propietariosRegistrados ?? 0,
                 'mascotasVacunadasYNo' => $mascotasVacunadasYNo ?? [],
